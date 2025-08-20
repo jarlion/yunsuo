@@ -37,9 +37,10 @@ def pl_list():
             pl_list.sort(key=lambda x: x.get('stars', 0), reverse=True)
 
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return response_error(str(e))
 
-    return jsonify(pl_list)
+    return response_success(pl_list)
+
 
 
 
@@ -49,6 +50,27 @@ def pl_list():
 @app.route('/pl/del')
 def pl_del():
     return 'pl_del'
+
+def response_success(data, msg='success', page:dict={}):
+    return jsonify({'code': 'success', 'msg': msg, 'data': data, 'page': page})
+
+def response_error(msg='error', code='error'):
+    return jsonify({'code': code, 'msg': msg})
+
+
+
+class Pipe:
+    def __init__(self, links:dict):
+        self.links = links
+    
+    def transform(self, data:dict):
+        result = {}
+        for link in self.links:
+            result[self.links[link]] = data[link]
+        return result
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
