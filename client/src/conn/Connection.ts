@@ -8,19 +8,32 @@ const conn = axios.create({
   },
 });
 
-export function request<T, P>(cfg: {
+interface IResonse<T> {
+  code: string;
+  msg: string;
+  data: T;
+}
+
+function parseResult<D,E>(res: AxiosResponse<IResonse<D>,E>) {
+  if (res.data.code !== 'success') {
+    throw new Error(res.data.msg);
+  }
+  return res.data.data;
+}
+
+export function request<R, P>(cfg: {
   url: string;
   method?: string;
   params?: P;
-}): Promise<T> {
+}) {
   if (!cfg.method) {
     cfg.method = "POST";
   }
 
   return conn
-    .request<T, AxiosResponse<T, Error>, P>({
+    .request<R, AxiosResponse<IResonse<R>, Error>, P>({
       ...cfg,
       data: cfg.params,
     })
-    .then((res) => res.data);
+    .then<R>(parseResult);
 }
