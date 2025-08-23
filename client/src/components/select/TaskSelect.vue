@@ -10,21 +10,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, type ShallowRef } from "vue";
-import { list } from "@/protocols/tasks/list";
+import type { ISelectOption } from "@/models/SelectOption";
+import type { TaskManager } from "@/models/Task";
+import { getSingleton } from "@/utils/singleton";
+import { shallowRef, type ShallowRef } from "vue";
 
 const model = defineModel({
   type: String,
   default: "",
 });
 
-const options: ShallowRef<{ value: string; label: string }[]> = ref([]);
+const taskManager = getSingleton<TaskManager>("taskManager");
+const options: ShallowRef<ISelectOption[]> = shallowRef([]);
 
-onMounted(async () => {
-  const tasks = await list({});
-  options.value = tasks.map((i) => ({
-    value: i.code,
-    label: i.name,
-  }));
-});
+async function initOptions() {
+  await taskManager.init();
+  options.value = taskManager.toOptions();
+}
+
+initOptions();
 </script>

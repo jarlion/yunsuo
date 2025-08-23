@@ -16,14 +16,15 @@
         <el-input v-model="model.name" />
       </el-form-item>
     </el-form>
+    <TaskConfigListEditPane v-model="model.tasks" :width="500" :height="300"/>
     <template #footer>
-      <el-button type="primary" @click="onOk">Submit</el-button>
       <el-button @click="onClose">Cancel</el-button>
+      <el-button type="primary" @click="onOk">Submit</el-button>
     </template>
   </el-dialog>
 </template>
 <script setup lang="ts">
-import type { IPipeline } from "@/models/Pipeline";
+import { clone, type IPipeline } from "@/models/Pipeline";
 import {
     ElButton,
     ElDialog,
@@ -33,6 +34,7 @@ import {
 } from "element-plus";
 
 import { ref } from "vue";
+import TaskConfigListEditPane from "@/components/panes/TaskConfigListEditPane.vue";
 
 const emit = defineEmits(["ok"]);
 
@@ -47,7 +49,7 @@ const isCodeEditable = ref(false);
 
 function show(pipeline?: IPipeline) {
   if (pipeline) {
-    model.value = pipeline;
+    model.value = clone(pipeline);
     isCodeEditable.value = pipeline.code?.length === 0;
   }
 

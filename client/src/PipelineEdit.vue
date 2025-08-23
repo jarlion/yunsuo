@@ -52,7 +52,6 @@
 import { Delete, Edit, Plus, Star, StarFilled } from "@element-plus/icons-vue";
 import { ref, shallowRef, type ShallowRef } from "vue";
 
-import type { TableInstance } from "element-plus";
 import {
   ElButton,
   ElCol,
@@ -62,6 +61,7 @@ import {
   ElRow,
   ElTable,
   ElTableColumn,
+  type TableInstance
 } from "element-plus";
 import PipelineDialog from "@/dialogs/PipelineDialog.vue";
 import type { IPipeline } from "@/models/Pipeline";
