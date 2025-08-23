@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     title="Pipeline Dialog"
-    :visible.sync="visible"
+    v-model="visible"
     width="50%"
     :before-close="onClose"
   >
