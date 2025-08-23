@@ -3,7 +3,7 @@ import PipelineEditor from './pages/PipelineEditor.vue'
 import { ElMessage } from 'element-plus'
 import 'element-plus/dist/index.css'
 import PipelineEdit from '@/PipelineEdit.vue'
-import TaskPane from '@/panes/TaskPane.vue'
+import TaskPane from '@/components/panes/TaskPane.vue'
 
 
 </script>
