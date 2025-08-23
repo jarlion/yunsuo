@@ -3,25 +3,26 @@
 </template>
 
 <script lang="tsx" setup>
-import { ElButton, ElIcon, ElTag, ElTooltip } from "element-plus";
-import { ref, shallowRef, type ShallowRef } from "vue";
+import { ElButton, ElMessage, ElTag, ElTooltip } from "element-plus";
+import { shallowRef, type ShallowRef } from "vue";
 
+import type { IDefValue, ITask } from "@/model/Task";
+import { list } from "@/protocols/tasks/list";
 import type { Column } from "element-plus";
-import type { ITask } from "@/model/Task";
 import { TableV2FixedDir } from "element-plus";
 
-const ParamsCellRender = ({ cellData }) => {
+const ParamsCellRender = ({ cellData }: { cellData: IDefValue[] }) => {
   if (!cellData) {
     return <p>--</p>;
   }
-  const keys = Object.keys(cellData);
+  const keys = cellData;
   const more = keys.length > 1 ? `+${keys.length - 1}` : "";
   return (
-    <ElTooltip content={keys.join(',')}>
+    <ElTooltip content={keys.map((i) => `${i.name}:${i.type}`).join(',')}>
       {
         <div>
           {[
-            <ElTag>{`${keys[0]}:${cellData[keys[0]]}`}</ElTag>,
+            keys[0]&&<ElTag>{`${keys[0].name}:${keys[0].type}`}</ElTag>,
             more && <ElTag>{more}</ElTag>,
           ]}
         </div>
@@ -34,8 +35,7 @@ const columns: Column<any>[] = [
   {
     key: "index",
     title: "Index",
-    width: 60,
-    fixed: TableV2FixedDir.LEFT,
+    width: 70,
     cellRenderer: ({ rowIndex }) => <span>{rowIndex + 1}</span>,
   },
   {
@@ -85,15 +85,15 @@ const columns: Column<any>[] = [
 ];
 
 const model: ShallowRef<ITask[]> = shallowRef([
-  {
-    id: "1",
-    code: "OpenFileOrDir",
-    desc: "打开文件/文件夹",
-    name: "打开文件/文件夹",
-    mode: "1",
-    params: { path: "str", encode: "str" },
-    ctx: { root: "str" },
-    result: { file: "any", dir: "any" },
-  },
 ]);
+
+async function init() {
+  try {
+    model.value = await list({});
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
+}
+
+  init();
 </script>

@@ -1,10 +1,18 @@
+export interface IDefValue {
+  name: string;
+  type: string;
+  required: boolean;
+  desc: string;
+  default?: string;
+}
+
 export interface ITask {
-  id:string;
+  id: string;
   code: string;
   desc: string;
   name: string;
   mode: string;
-  params: Record<string, string>;
-  ctx: Record<string, string>;
-  result: Record<string, string>;
+  params: IDefValue[];
+  ctx: IDefValue[];
+  result: IDefValue[];
 }
