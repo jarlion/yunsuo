@@ -61,7 +61,7 @@ import {
   ElRow,
   ElTable,
   ElTableColumn,
-  type TableInstance
+  type TableInstance,
 } from "element-plus";
 import PipelineDialog from "@/dialogs/PipelineDialog.vue";
 import type { IPipeline } from "@/models/Pipeline";
@@ -85,13 +85,14 @@ function onEdit(row?: IPipeline) {
 }
 
 async function onDelete(rows: IPipeline[]) {
+  console.log(rows);
   if (!rows?.length) {
     ElMessage.warning("请选择要删除的项");
     return;
   }
 
   try {
-    ElMessageBox.confirm("确定删除选中项吗？", "删除确认", {
+    await ElMessageBox.confirm("确定删除选中项吗？", "删除确认", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",

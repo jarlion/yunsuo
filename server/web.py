@@ -44,7 +44,67 @@ def pl_list():
 
     return response_success(pl_list)
 
+### 流水线更新
+@app.route('/pl/update', methods=['POST'])
+def pl_update():
+    # 读取入参
+    req = request.get_json()
+    id = req.get('id')
+    code = req.get('code')
+    name = req.get('name')
+    desc = req.get('desc')
+    stars = req.get('stars')
+    tasks = req.get('tasks')
+    try:
+        # 读取json文件
+        with open('data/pl.json', 'r', encoding='utf-8') as f:
+            pl_list = json.load(f)
+            # 如果 id 有值 则根据 id 精确匹配
+            if id:
+                pl_list = [pl for pl in pl_list if pl.get('id') == id]
+                if pl_list:
+                    pl = pl_list[0]
+                    if code:
+                        pl['code'] = code
+                    if name:
+                        pl['name'] = name
+                    if desc:
+                        pl['desc'] = desc
+                    if stars:
+                        pl['stars'] = stars
+                    if tasks:
+                        pl['tasks'] = tasks
+            # 否则返回所有任务
+            else:
+                return response_error('id not found')
+        # 写入json文件
+        with open('data/pl.json', 'w', encoding='utf-8') as f:
+            json.dump(pl_list, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(pl_list)
 
+### 流水线删除
+@app.route('/pl/delete', methods=['POST'])
+def pl_delete():
+    # 读取入参
+    ids = request.get_json()
+    try:
+        # 读取json文件
+        with open('data/pl.json', 'r', encoding='utf-8') as f:
+            pl_list = json.load(f)
+            # 如果 id 有值 则根据 id 精确匹配
+            if ids:
+                pl_list = [pl for pl in pl_list if pl.get('id') not in ids]
+            # 否则返回所有任务
+            else:
+                return response_error('id not found')
+        # 写入json文件
+        with open('data/pl.json', 'w', encoding='utf-8') as f:
+            json.dump(pl_list, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(pl_list)
 
 ### 任务列表
 @app.route('/task/list', methods=['POST'])

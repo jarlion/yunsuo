@@ -9,6 +9,17 @@ export interface IPipeline {
   tasks: ITaskConfig[];
 }
 
+export function create(): IPipeline {
+  return {
+    id:  `PL${Date.now()}`,
+    name: "",
+    code: "",
+    desc: "",
+    stars: 0,
+    tasks: [],
+  };
+}
+
 export function clone(pipeline: IPipeline): IPipeline {
   const { id, code, desc, name, stars, tasks } = pipeline;
   const clonedTasks = tasks.map((item) => ({

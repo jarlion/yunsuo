@@ -24,7 +24,7 @@
   </el-dialog>
 </template>
 <script setup lang="ts">
-import { clone, type IPipeline } from "@/models/Pipeline";
+import { clone, create, type IPipeline } from "@/models/Pipeline";
 import {
     ElButton,
     ElDialog,
@@ -39,7 +39,7 @@ import TaskConfigListEditPane from "@/components/panes/TaskConfigListEditPane.vu
 const emit = defineEmits(["ok"]);
 
 const visible = ref(false);
-const model = ref<IPipeline>(initModel());
+const model = ref<IPipeline>(create());
 const rules = ref({
   name: [{ required: true, message: "请输入名称", trigger: "blur" }],
   desc: [{ required: true, message: "请输入描述", trigger: "blur" }],
@@ -58,7 +58,7 @@ function show(pipeline?: IPipeline) {
 
 function onClose() {
   visible.value = false;
-  model.value = initModel();
+  model.value = create();
 }
 
 function onOk() {
@@ -66,15 +66,6 @@ function onOk() {
   onClose();
 }
 
-function initModel(): IPipeline {
-  return {
-    name: "",
-    code: "",
-    desc: "",
-    stars: 0,
-    tasks: [],
-  };
-}
 
 defineExpose({ show });
 </script>

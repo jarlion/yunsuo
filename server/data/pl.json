@@ -8,7 +8,9 @@
       {
         "code": "find",
         "params": {
-          "patterns": ["/**/*.ts"]
+          "patterns": [
+            "/**/*.ts"
+          ]
         }
       }
     ]
@@ -35,21 +37,8 @@
     "tasks": []
   },
   {
-    "name": "PL005",
-    "code": "PL005",
-    "desc": "这是第五个流水线",
-    "stars": 1,
-    "tasks": []
-  },
-  {
-    "name": "PL006",
-    "code": "PL006",
-    "desc": "这是第六个流水线",
-    "stars": 2,
-    "tasks": []
-  },
-  {
     "name": "PL007",
+    "id": "PL007",
     "code": "PL007",
     "desc": "这是第七个流水线",
     "stars": 3,
@@ -57,6 +46,7 @@
   },
   {
     "name": "PL008",
+    "id": "PL008",
     "code": "PL008",
     "desc": "这是第八个流水线",
     "stars": 4,
@@ -64,43 +54,9 @@
   },
   {
     "name": "PL009",
+    "id": "PL009",
     "code": "PL009",
     "desc": "这是第九个流水线",
-    "stars": 5,
-    "tasks": []
-  },
-  {
-    "name": "PL010",
-    "code": "PL010",
-    "desc": "这是第十个流水线",
-    "stars": 5,
-    "tasks": []
-  },
-  {
-    "name": "PL011",
-    "code": "PL011",
-    "desc": "这是第十一个流水线",
-    "stars": 5,
-    "tasks": []
-  },
-  {
-    "name": "PL012",
-    "code": "PL012",
-    "desc": "这是第十二个流水线",
-    "stars": 5,
-    "tasks": []
-  },
-  {
-    "name": "PL013",
-    "code": "PL013",
-    "desc": "这是第十三个流水线",
-    "stars": 5,
-    "tasks": []
-  },
-  {
-    "name": "PL014",
-    "code": "PL014",
-    "desc": "这是第十四个流水线",
     "stars": 5,
     "tasks": []
   }
