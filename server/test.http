@@ -8,3 +8,18 @@ content-type: application/json
     "name": "",
     "desc": "流水线"
 }
+
+### 任务列表
+POST http://localhost:5000/task/list HTTP/1.1
+content-type: application/json
+
+{
+    "code": "rename"
+}
+
+###
+POST http://localhost:5000/task/list HTTP/1.1
+content-type: application/json
+
+{
+}
