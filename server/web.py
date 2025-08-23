@@ -3,6 +3,7 @@ import json
 from flask import request
 from flask_cors import CORS
 import os
+import importlib.util
 
 app = Flask(__name__)
 CORS(app)
@@ -82,9 +83,56 @@ def task_detail():
                 task_list = [task for task in task_list]
     except Exception as e:
         return response_error(str(e))
-    return response_success(task_list)
+    return response_success(task_list)  
 
+def load_and_run(filepath: str, *args, **kwargs):
+    """
+    动态加载 filepath 对应的模块并执行其 main(*args, **kwargs)
+    返回 main 的返回值
+    """
+    # 1. 构造模块名（保证唯一，避免缓存冲突）
+    mod_name = f"_dyn_{abs(hash(filepath))}"
 
+    # 2. 创建 spec + 模块对象
+    spec   = importlib.util.spec_from_file_location(mod_name, filepath)
+    if not spec:
+        raise ImportError(f"Cannot find spec for {filepath}")
+    module = importlib.util.module_from_spec(spec)
+    if not module:
+        raise ImportError(f"Cannot create module for {filepath}")
+
+    # 3. 执行模块代码
+    if not spec.loader:
+        raise ImportError(f"Cannot find loader for {filepath}")
+    try:
+        spec.loader.exec_module(module)
+    except Exception as e:
+        raise ImportError(f"Error executing module {filepath}: {e}")
+
+    # 4. 取 main 函数并调用
+    if not hasattr(module, 'main'):
+        raise AttributeError(f"{filepath} has no 'main' function")
+    return module.main(*args, **kwargs)
+
+### 任务执行  
+@app.route('/task/start', methods=['POST'])   
+def task_start():
+    # 读取入参
+    req = request.get_json()
+    code = req.get('code')
+    if not code:
+        return response_error('Missing required params: code')
+    try:
+        # 读取json文件
+        with open(f'tasks/{code}/info.json', 'r', encoding='utf-8') as f:
+            task = json.load(f)
+            script = task.get('script')
+            script_path = os.path.join('tasks', code, script)
+            # 执行脚本
+            result = load_and_run(script_path, params={'patterns': '[.+]'}, ctx={'root':'./'})
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(result)
 
 
 @app.route('/pl/del')
