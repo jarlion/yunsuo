@@ -1,13 +1,10 @@
 <template>
   <div class="pipeline-editor">
-    <el-row :gutter="10" justify="end">
-      <el-col :span="1">
-        <el-button :icon="Delete" @click="onDeleteSelected()"></el-button>
-      </el-col>
-      <el-col :span="1">
-        <el-button :icon="Plus" type="primary" @click="onEdit()"></el-button>
-      </el-col>
-    </el-row>
+    <div class="pipelist-table-title">
+      <el-button :icon="Delete" type="danger" @click="onDeleteSelected()" />
+
+      <el-button :icon="Plus" type="primary" @click="onEdit()"></el-button>
+    </div>
     <el-row :gutter="10">
       <el-col :span="24">
         <el-table ref="pipelineTblRef" :data="model" style="width: 100%">
@@ -31,13 +28,13 @@
               <el-button
                 :icon="Edit"
                 type="primary"
-                size="small"
+                link
                 @click="onEdit(row)"
               />
               <el-button
                 :icon="Delete"
                 type="danger"
-                size="small"
+                link
                 @click="onDelete([row])"
               />
             </template>
@@ -145,3 +142,9 @@ async function init() {
 
 init();
 </script>
+<style lang="css">
+.pipelist-table-title {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

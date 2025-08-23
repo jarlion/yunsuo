@@ -1,6 +1,7 @@
 [
   {
     "name": "PL001",
+    "id": "PL001",
     "code": "PL001",
     "desc": "这是第一个流水线",
     "stars": 5,
@@ -17,47 +18,10 @@
   },
   {
     "name": "PL002",
+    "id": "PL002",
     "code": "PL002",
     "desc": "这是第二个流水线",
     "stars": 4,
-    "tasks": []
-  },
-  {
-    "name": "PL003",
-    "code": "PL003",
-    "desc": "这是第三个流水线",
-    "stars": 3,
-    "tasks": []
-  },
-  {
-    "name": "PL004",
-    "code": "PL004",
-    "desc": "这是第四个流水线",
-    "stars": 2,
-    "tasks": []
-  },
-  {
-    "name": "PL007",
-    "id": "PL007",
-    "code": "PL007",
-    "desc": "这是第七个流水线",
-    "stars": 3,
-    "tasks": []
-  },
-  {
-    "name": "PL008",
-    "id": "PL008",
-    "code": "PL008",
-    "desc": "这是第八个流水线",
-    "stars": 4,
-    "tasks": []
-  },
-  {
-    "name": "PL009",
-    "id": "PL009",
-    "code": "PL009",
-    "desc": "这是第九个流水线",
-    "stars": 5,
     "tasks": []
   }
 ]

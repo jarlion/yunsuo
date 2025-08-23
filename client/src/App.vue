@@ -13,13 +13,12 @@ import TaskPane from '@/components/panes/TaskPane.vue'
     <!-- <PipelineEditor />
       -->
     <PipelineEdit />
-    <TaskPane />
   </div>
 </template>
 
 <style scoped>
 .app-container {
-  height: 100vh;
+  height: 100%;
   width: 100%;
 }
 </style>

@@ -104,7 +104,7 @@ def pl_delete():
             json.dump(pl_list, f, ensure_ascii=False, indent=2)
     except Exception as e:
         return response_error(str(e))
-    return response_success(pl_list)
+    return response_success(pl_list, "delete success")
 
 ### 任务列表
 @app.route('/task/list', methods=['POST'])

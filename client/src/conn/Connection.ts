@@ -8,17 +8,31 @@ const conn = axios.create({
   },
 });
 
+interface IMessage {
+  success: (msg: string) => void;
+  error: (msg: string) => void;
+}
+
+let message!: IMessage;
+
 interface IResonse<T> {
   code: string;
   msg: string;
   data: T;
 }
 
-function parseResult<D,E>(res: AxiosResponse<IResonse<D>,E>) {
-  if (res.data.code !== 'success') {
+function parseResult<D, E>(res: AxiosResponse<IResonse<D>, E>) {
+  if (res.data.code !== "success") {
     throw new Error(res.data.msg);
   }
+  if (res.data.msg) {
+    message?.success(res.data.msg);
+  }
   return res.data.data;
+}
+
+export function init(message: IMessage) {
+  message = message;
 }
 
 export function request<R, P>(cfg: {
