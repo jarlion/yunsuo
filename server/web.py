@@ -2,6 +2,8 @@ from flask import Flask, jsonify
 import json
 from flask import request
 from flask_cors import CORS
+import os
+
 app = Flask(__name__)
 CORS(app)
 
@@ -43,6 +45,44 @@ def pl_list():
 
 
 
+### 任务列表
+@app.route('/task/list', methods=['POST'])
+def task_list():
+    # 读取入参
+    req = request.get_json()
+    code = req.get('code')
+    result = []
+    try:
+        for dir in os.listdir('tasks'):
+            if os.path.isdir(os.path.join('tasks', dir)):
+                # 读取json文件
+                with open(os.path.join('tasks', dir, 'info.json'), 'r', encoding='utf-8') as f:
+                    task = json.load(f)
+                    result.append(task)
+
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(result)
+
+### 任务详情
+@app.route('/task/detail', methods=['POST'])
+def task_detail():
+    # 读取入参
+    req = request.get_json()
+    code = req.get('code')
+    try:
+        # 读取json文件
+        with open('data/task.json', 'r', encoding='utf-8') as f:
+            task_list = json.load(f)
+            # 如果 code 有值 则根据 code 精确匹配
+            if code:
+                task_list = [task for task in task_list if task.get('code') == code]
+            # 否则返回所有任务
+            else:
+                task_list = [task for task in task_list]
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(task_list)
 
 
 
