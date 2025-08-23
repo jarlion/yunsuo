@@ -63,12 +63,12 @@ import {
   ElTable,
   ElTableColumn,
 } from "element-plus";
-import PipelineDialog from "./dialog/PipelineDialog.vue";
-import type { IPipeline } from "./model/Pipeline";
-import { del } from "./protocols/pl/del";
-import { list } from "./protocols/pl/list";
-import { add } from "./protocols/pl/add";
-import { update } from "./protocols/pl/update";
+import PipelineDialog from "@/dialogs/PipelineDialog.vue";
+import type { IPipeline } from "@/models/Pipeline";
+import { del } from "@/protocols/pl/del";
+import { list } from "@/protocols/pl/list";
+import { add } from "@/protocols/pl/add";
+import { update } from "@/protocols/pl/update";
 
 const model: ShallowRef<IPipeline[]> = shallowRef([]);
 
@@ -121,7 +121,7 @@ async function onOk(pipeline: IPipeline) {
       model.value = await update(pipeline);
     }
   } catch (err) {
-    ElMessage.error(err.message);
+    ElMessage.error((err as Error).message);
     return;
   }
 }
@@ -138,7 +138,7 @@ async function init() {
     model.value = await list({});
     console.log(model.value);
   } catch (err) {
-    ElMessage.error(err.message);
+    ElMessage.error((err as Error).message);
   }
 }
 

@@ -1,4 +1,4 @@
-import type { IPipeline } from "@/model/Pipeline";
+import type { IPipeline } from "@/models/Pipeline";
 import { request } from "../../conn/Connection";
 
 export function list(params: IListParams) {
