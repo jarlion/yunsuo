@@ -3,6 +3,7 @@ import json
 from flask import request
 from flask_cors import CORS
 import os
+from datetime import datetime
 import importlib.util
 
 app = Flask(__name__)
@@ -10,7 +11,7 @@ CORS(app)
 
 @app.route('/')
 def hello():
-    return 'Hello, Flask!'
+    return 'Hello, YunSuo!'
 
 @app.route('/pl/list', methods=['POST'])
 def pl_list():
@@ -46,6 +47,42 @@ def pl_list():
 
     return response_success(pl_list)
 
+### 流水线增加
+@app.route('/pl/add', methods=['POST'])
+def pl_add():
+    # 读取入参
+    req = request.get_json()
+    id = 'PL'+datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    code = req.get('code')
+    name = req.get('name')
+    ctx = req.get('ctx',{})
+    desc = req.get('desc')
+    stars = req.get('stars')
+    tasks = req.get('tasks')
+    try:
+        # 读取json文件
+        with open('data/pl.json', 'r', encoding='utf-8') as f:
+            pl_list = json.load(f)
+            # 新增
+            pl = {
+                'id': id,
+                'code': code,
+                'name': name,
+                'ctx': ctx,
+                'desc': desc,
+                'stars': stars,
+                'tasks': tasks,
+                'create_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            pl_list.append(pl)
+            # 写入json文件
+        with open('data/pl.json', 'w', encoding='utf-8') as f:
+            json.dump(pl_list, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(pl_list)
+
 ### 流水线更新
 @app.route('/pl/update', methods=['POST'])
 def pl_update():
@@ -79,6 +116,8 @@ def pl_update():
                         pl['stars'] = stars
                     if tasks:
                         pl['tasks'] = tasks
+                    # 更新时间
+                    pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             # 否则返回所有任务
             else:
                 return response_error('id not found')
