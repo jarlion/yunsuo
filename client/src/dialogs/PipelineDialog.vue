@@ -16,7 +16,8 @@
         <el-input v-model="model.desc" />
       </el-form-item>
       <el-form-item label="Context" prop="ctx">
-        <el-input v-model="model.ctx" />
+        <RecordPopover v-model="model.ctx" />
+        <!-- <el-input v-model="model.ctx" /> -->
       </el-form-item>
     </el-form>
     <TaskConfigListEditPane v-model="model.tasks" :width="500" :height="300"/>
@@ -38,6 +39,7 @@ import {
 
 import { ref } from "vue";
 import TaskConfigListEditPane from "@/components/panes/TaskConfigListEditPane.vue";
+import RecordPopover from "@/components/popover/RecordPopover.vue";
 
 const emit = defineEmits(["ok"]);
 

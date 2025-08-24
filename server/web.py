@@ -18,7 +18,9 @@ def pl_list():
     req = request.get_json()
     name = req.get('name')
     code = req.get('code')
+    # ctx = req.get('ctx')
     desc = req.get('desc')
+    # tasks = req.get('tasks')
     
     try:
         # 读取json文件
@@ -52,6 +54,7 @@ def pl_update():
     id = req.get('id')
     code = req.get('code')
     name = req.get('name')
+    ctx = req.get('ctx',{})
     desc = req.get('desc')
     stars = req.get('stars')
     tasks = req.get('tasks')
@@ -64,6 +67,8 @@ def pl_update():
                 pl_list = [pl for pl in pl_list if pl.get('id') == id]
                 if pl_list:
                     pl = pl_list[0]
+                    if ctx:
+                        pl['ctx'] = ctx
                     if code:
                         pl['code'] = code
                     if name:

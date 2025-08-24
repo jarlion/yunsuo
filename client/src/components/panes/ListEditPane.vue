@@ -91,7 +91,7 @@ async function onDelete(rows: T[]) {
 }
 
 async function onDeleteSelected() {
-  const selection = tblRef.value?.getSelectionRows() as T[];
+  const selection = model.value.filter((i) => i.checked);
   onDelete(selection);
 }
 

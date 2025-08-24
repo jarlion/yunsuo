@@ -17,8 +17,9 @@ import {
   type Column,
 } from "element-plus";
 import { type PropType } from "vue";
-import TaskSelect from "../select/TaskSelect.vue";
+import TaskSelect from "@/components/select/TaskSelect.vue";
 import { Delete, Edit } from "@element-plus/icons-vue";
+import RecordPopover from "@/components/popover/RecordPopover.vue";
 
 interface ITaskConfigRow extends ITaskConfig {
   checked: boolean;
@@ -70,7 +71,9 @@ const columns: Column<any>[] = [
     title: "Params",
     dataKey: "params",
     width: 200,
-    // cellRenderer: ParamsCellRender,
+    cellRenderer: ({ rowData }) => (
+      <RecordPopover v-model={rowData.params}></RecordPopover>
+    ),
   },
   {
     key: "operations",
@@ -86,8 +89,7 @@ const columns: Column<any>[] = [
             e.stopPropagation();
             onDelete([rowData]);
           }}
-        >
-        </ElButton>
+        ></ElButton>
       </>
     ),
     width: 150,
