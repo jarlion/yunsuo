@@ -83,6 +83,23 @@ def pl_add():
         return response_error(str(e))
     return response_success(pl_list)
 
+def find_item_by_id(lst:list, target_id:str)->(dict|None):
+    """
+    查找列表中 id 匹配的项
+    :param lst: 列表
+    :param target_id: 目标 id
+    :return: 匹配的项，未找到时返回 None
+    """
+    for item in lst:
+        # 检查item是否为字典并包含id键
+        if isinstance(item, dict):
+            if 'id' in item and item['id'] == target_id:
+                return item
+        # 检查item是否为对象并包含id属性
+        elif hasattr(item, 'id') and item.id == target_id:
+            return item
+    return None  # 未找到匹配项时返回None
+
 ### 流水线更新
 @app.route('/pl/update', methods=['POST'])
 def pl_update():
@@ -100,27 +117,23 @@ def pl_update():
         with open('data/pl.json', 'r', encoding='utf-8') as f:
             pl_list = json.load(f)
             # 如果 id 有值 则根据 id 精确匹配
-            if id:
-                pl_list = [pl for pl in pl_list if pl.get('id') == id]
-                if pl_list:
-                    pl = pl_list[0]
-                    if ctx:
-                        pl['ctx'] = ctx
-                    if code:
-                        pl['code'] = code
-                    if name:
-                        pl['name'] = name
-                    if desc:
-                        pl['desc'] = desc
-                    if stars:
-                        pl['stars'] = stars
-                    if tasks:
-                        pl['tasks'] = tasks
-                    # 更新时间
-                    pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            # 否则返回所有任务
-            else:
+            if not id:
+                return response_error('id not be empty')
+
+            # 查找 id 匹配的项
+            pl = find_item_by_id(pl_list, id)
+            if not pl:
                 return response_error('id not found')
+            
+            pl['ctx'] = ctx
+            pl['code'] = code
+            pl['name'] = name
+            pl['desc'] = desc
+            pl['stars'] = stars
+            pl['tasks'] = tasks
+            # 更新时间
+            pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
         # 写入json文件
         with open('data/pl.json', 'w', encoding='utf-8') as f:
             json.dump(pl_list, f, ensure_ascii=False, indent=2)
