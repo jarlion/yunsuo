@@ -3,7 +3,7 @@ import type { ITaskConfig } from "./Task";
 export interface IPipeline {
   id?: string;
   code: string;
-  ctx: string;
+  ctx: Record<string, string>;
   desc: string;
   name: string;
   stars: number;
@@ -15,7 +15,7 @@ export function create(): IPipeline {
     id:  `PL${Date.now()}`,
     name: "",
     code: "",
-    ctx: "",
+    ctx: {},
     desc: "",
     stars: 0,
     tasks: [],

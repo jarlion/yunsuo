@@ -47,7 +47,7 @@ const visible = ref(false);
 const model = ref<IPipeline>(create());
 const rules = ref({
   name: [{ required: true, message: "请输入名称", trigger: "blur" }],
-  desc: [{ required: true, message: "请输入描述", trigger: "blur" }],
+  ctx: [{ required: true, message: "请输入上下文", trigger: "blur" }],
 });
 
 const isCodeEditable = ref(false);

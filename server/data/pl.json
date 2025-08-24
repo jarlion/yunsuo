@@ -3,8 +3,11 @@
     "name": "PL001",
     "id": "PL001",
     "code": "PL001",
-    "desc": "这是第一个流水线",
+    "desc": "解压文件",
     "stars": 5,
+    "ctx": {
+      "root": "v:\\"
+    },
     "tasks": [
       {
         "code": "find",
@@ -22,6 +25,9 @@
     "code": "PL002",
     "desc": "这是第二个流水线",
     "stars": 4,
+    "ctx": {
+      "root": ""
+    },
     "tasks": []
   }
 ]
