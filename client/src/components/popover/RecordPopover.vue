@@ -8,7 +8,7 @@
         </el-button>
       </slot>
     </template>
-    <el-form :model="model" :rules="rules" ref="formRef">
+    <el-form :model="model" :rules="rules" ref="formRef" label-width="100px">
       <el-form-item v-for="key in Object.keys(model)" :label="key">
         <el-input v-model="model[key]" />
       </el-form-item>

@@ -1,6 +1,5 @@
 import { list } from "@/protocols/tasks/list";
 
-
 export interface IDefValue {
   name: string;
   type: string;
@@ -23,7 +22,7 @@ export interface ITask {
 export interface ITaskConfig {
   id: string;
   code: string;
-  params: IDefValue[];
+  params: Record<string, any>;
 }
 
 export class TaskManager {
@@ -37,15 +36,48 @@ export class TaskManager {
       const tasks = await list({});
       this.tasks = tasks;
     } catch (err) {
-      console.error('初始化任务失败', err);
+      console.error("初始化任务失败", err);
     }
     return this;
   }
-  
+
+  getTask(code: string): ITask | undefined {
+    return this.tasks.find((item) => item.code === code);
+  }
+
   toOptions() {
     return this.tasks.map((item) => ({
       value: item.code,
       label: item.name,
     }));
+  }
+}
+
+export function initRecord(defs: IDefValue[]): Record<string, any> {
+  const result: Record<string, any> = {};
+  defs.forEach((def) => {
+    result[def.name] = initRecordValue(def);
+  });
+  return result;
+}
+
+export function initRecordValue(def: IDefValue) {
+  if (def.default) {
+    return def.default;
+  }
+  if (def.type === "string") {
+    return "";
+  }
+  if (def.type === "number") {
+    return 0;
+  }
+  if (def.type === "boolean") {
+    return false;
+  }
+  if (def.type === "object") {
+    return {};
+  }
+  if (def.type === "array" || def.type.endsWith("[]")) {
+    return [];
   }
 }

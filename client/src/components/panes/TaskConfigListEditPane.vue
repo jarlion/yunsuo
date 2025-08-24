@@ -8,7 +8,12 @@
 </template>
 <script setup lang="tsx">
 import ListEditPane from "@/components/panes/ListEditPane.vue";
-import { type IDefValue, type ITaskConfig } from "@/models/Task";
+import {
+  initRecord,
+  TaskManager,
+  type IDefValue,
+  type ITaskConfig,
+} from "@/models/Task";
 import {
   ElButton,
   ElTag,
@@ -20,6 +25,7 @@ import { type PropType } from "vue";
 import TaskSelect from "@/components/select/TaskSelect.vue";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import RecordPopover from "@/components/popover/RecordPopover.vue";
+import { getSingleton } from "@/utils/singleton";
 
 interface ITaskConfigRow extends ITaskConfig {
   checked: boolean;
@@ -50,6 +56,17 @@ const ParamsCellRender = ({ cellData }: { cellData: IDefValue[] }) => {
   );
 };
 
+const initParams = (code: string, rowData: ITaskConfigRow) => {
+  console.log("initParams", code);
+  if (!code) {
+    return;
+  }
+  const task = getSingleton<TaskManager>("taskManager")?.getTask(code);
+  if (task) {
+    rowData.params = initRecord(task.params);
+  }
+};
+
 const columns: Column<any>[] = [
   {
     key: "index",
@@ -63,7 +80,10 @@ const columns: Column<any>[] = [
     dataKey: "code",
     width: 200,
     cellRenderer: ({ rowData }) => (
-      <TaskSelect v-model={rowData.code}></TaskSelect>
+      <TaskSelect
+        v-model={rowData.code}
+        onUpdate:modelValue={(v) => initParams(v, rowData)}
+      />
     ),
   },
   {

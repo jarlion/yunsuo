@@ -5,7 +5,7 @@
   "params": [
     {
       "name": "patterns",
-      "type": "Array<RegExp>",
+      "type": "string[]",
       "required": true,
       "desc": "文件或目录路径匹配正则表达式数组"
     }],
