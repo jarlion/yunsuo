@@ -18,12 +18,11 @@ import {
   ElButton,
   ElTag,
   ElTooltip,
-  type CheckboxValueType,
   type Column,
 } from "element-plus";
 import { type PropType } from "vue";
 import TaskSelect from "@/components/select/TaskSelect.vue";
-import { Delete, Edit } from "@element-plus/icons-vue";
+import { Delete, Promotion } from "@element-plus/icons-vue";
 import RecordPopover from "@/components/popover/RecordPopover.vue";
 import { getSingleton } from "@/utils/singleton";
 
@@ -100,7 +99,7 @@ const columns: Column<any>[] = [
     title: "Operations",
     cellRenderer: ({ rowData }) => (
       <>
-        <ElButton icon={Edit} link></ElButton>
+        <ElButton icon={Promotion} link></ElButton>
         <ElButton
           icon={Delete}
           link

@@ -1,9 +1,10 @@
 <template>
   <div class="pipeline-editor">
     <div class="pipelist-table-title">
-      <el-button :icon="Delete" type="danger" @click="onDeleteSelected()" />
-
-      <el-button :icon="Plus" type="primary" @click="onEdit()"></el-button>
+      <el-button-group class="ml-4">
+        <el-button :icon="Delete" type="danger" @click="onDeleteSelected()" />
+        <el-button :icon="Plus" type="primary" @click="onEdit()" />
+      </el-button-group>
     </div>
     <el-row :gutter="10">
       <el-col :span="24">

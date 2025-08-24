@@ -1,7 +1,9 @@
 <template>
   <div class="list-table-title">
-    <el-button :icon="Delete" type="danger" @click="onDeleteSelected()"></el-button>
-    <el-button :icon="Plus" type="primary" @click="onEdit()"></el-button>
+    <el-button-group>
+      <el-button :icon="Delete" type="danger" @click="onDeleteSelected()" />
+      <el-button :icon="Plus" type="primary" @click="onEdit()" />
+    </el-button-group>
   </div>
   <el-row :gutter="10">
     <el-col>
