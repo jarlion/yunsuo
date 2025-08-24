@@ -134,7 +134,6 @@ async function onDeleteSelected() {
 async function init() {
   try {
     model.value = await list({});
-    console.log(model.value);
   } catch (err) {
     ElMessage.error((err as Error).message);
   }

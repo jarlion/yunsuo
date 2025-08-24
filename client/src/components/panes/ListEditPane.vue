@@ -1,6 +1,6 @@
 <template>
   <div class="list-table-title">
-    <el-button :icon="Delete" @click="onDeleteSelected()"></el-button>
+    <el-button :icon="Delete" type="danger" @click="onDeleteSelected()"></el-button>
     <el-button :icon="Plus" type="primary" @click="onEdit()"></el-button>
   </div>
   <el-row :gutter="10">

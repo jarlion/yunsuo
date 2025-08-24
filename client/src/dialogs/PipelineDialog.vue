@@ -9,11 +9,14 @@
       <el-form-item label="Code" prop="code">
         <el-input v-model="model.code" :disabled="!isCodeEditable" />
       </el-form-item>
+      <el-form-item label="Name" prop="name">
+        <el-input v-model="model.name" />
+      </el-form-item>
       <el-form-item label="Desc" prop="desc">
         <el-input v-model="model.desc" />
       </el-form-item>
-      <el-form-item label="Name" prop="name">
-        <el-input v-model="model.name" />
+      <el-form-item label="Context" prop="ctx">
+        <el-input v-model="model.ctx" />
       </el-form-item>
     </el-form>
     <TaskConfigListEditPane v-model="model.tasks" :width="500" :height="300"/>
