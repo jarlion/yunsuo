@@ -8,23 +8,19 @@
 </template>
 <script setup lang="tsx">
 import ListEditPane from "@/components/panes/ListEditPane.vue";
+import RecordPopover from "@/components/popover/RecordPopover.vue";
+import TaskTestPopover from "@/components/popover/TaskTestPopover.vue";
+import TaskSelect from "@/components/select/TaskSelect.vue";
 import {
   initRecord,
   TaskManager,
   type IDefValue,
   type ITaskConfig,
 } from "@/models/Task";
-import {
-  ElButton,
-  ElTag,
-  ElTooltip,
-  type Column,
-} from "element-plus";
-import { type PropType } from "vue";
-import TaskSelect from "@/components/select/TaskSelect.vue";
-import { Delete, Promotion } from "@element-plus/icons-vue";
-import RecordPopover from "@/components/popover/RecordPopover.vue";
 import { getSingleton } from "@/utils/singleton";
+import { Delete, Promotion } from "@element-plus/icons-vue";
+import { ElButton, ElTag, ElTooltip, type Column } from "element-plus";
+import { type PropType } from "vue";
 
 interface ITaskConfigRow extends ITaskConfig {
   checked: boolean;
@@ -53,6 +49,10 @@ const ParamsCellRender = ({ cellData }: { cellData: IDefValue[] }) => {
       }
     </ElTooltip>
   );
+};
+
+const test = () => {
+  console.log("test");
 };
 
 const initParams = (code: string, rowData: ITaskConfigRow) => {
@@ -99,7 +99,7 @@ const columns: Column<any>[] = [
     title: "Operations",
     cellRenderer: ({ rowData }) => (
       <>
-        <ElButton icon={Promotion} link></ElButton>
+        <TaskTestPopover code={rowData.code} />
         <ElButton
           icon={Delete}
           link

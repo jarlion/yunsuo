@@ -202,6 +202,27 @@ def task_detail():
         return response_error(str(e))
     return response_success(task_list)  
 
+### 任务测试运行
+@app.route('/task/test', methods=['POST'])
+def task_test():
+    # 读取入参
+    req = request.get_json()
+    code = req.get('code')
+    params = req.get('params')
+    ctx = req.get('ctx',{})
+    try:
+        # 读取json文件
+        with open(f'tasks/{code}/info.json', 'r', encoding='utf-8') as f:
+            task = json.load(f)
+            script = task.get('script')
+            script_path = os.path.join('tasks', code, script)
+            # 执行脚本
+            print(isinstance(ctx, dict), ctx.get('root'))
+            result = load_and_run(script_path, params=params, ctx=ctx)
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(result)
+
 def load_and_run(filepath: str, *args, **kwargs):
     """
     动态加载 filepath 对应的模块并执行其 main(*args, **kwargs)
