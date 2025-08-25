@@ -12,7 +12,7 @@
       {
         "code": "find",
         "params": {
-          "patterns": "[\"B\\d+\"]"
+          "patterns": ["B\\d+"]
         }
       },
       {
