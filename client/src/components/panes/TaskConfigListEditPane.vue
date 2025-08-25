@@ -8,7 +8,6 @@
 </template>
 <script setup lang="tsx">
 import ListEditPane from "@/components/panes/ListEditPane.vue";
-import RecordPopover from "@/components/popover/RecordPopover.vue";
 import TaskTestPopover from "@/components/popover/TaskTestPopover.vue";
 import TaskSelect from "@/components/select/TaskSelect.vue";
 import {
@@ -18,7 +17,7 @@ import {
   type ITaskConfig,
 } from "@/models/Task";
 import { getSingleton } from "@/utils/singleton";
-import { Delete, Promotion } from "@element-plus/icons-vue";
+import { Delete } from "@element-plus/icons-vue";
 import { ElButton, ElTag, ElTooltip, type Column } from "element-plus";
 import { type PropType } from "vue";
 

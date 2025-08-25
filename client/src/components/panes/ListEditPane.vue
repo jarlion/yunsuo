@@ -5,17 +5,19 @@
       <el-button :icon="Plus" type="primary" @click="onEdit()" />
     </el-button-group>
   </div>
-  <el-row :gutter="10">
-    <el-col>
-      <el-table-v2
-        ref="tblRef"
-        :columns="editedColumns"
-        :data="model"
-        :width="width"
-        :height="height"
-      />
-    </el-col>
-  </el-row>
+  <div :style="`height: ${height}px`">
+    <el-auto-resizer>
+      <template #default="{ height: h, width: w }">
+        <el-table-v2
+          ref="tblRef"
+          :columns="editedColumns"
+          :data="model"
+          :width="w"
+          :height="h"
+        />
+      </template>
+    </el-auto-resizer>
+  </div>
 </template>
 
 <script lang="tsx" setup generic="T extends { checked: boolean }">
@@ -144,4 +146,3 @@ const editedColumns = computed(() => {
   ];
 });
 </script>
-
