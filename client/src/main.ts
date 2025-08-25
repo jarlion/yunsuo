@@ -5,6 +5,7 @@ import 'element-plus/dist/index.css'
 import { TaskManager } from '@/models/Task';
 import { createSingleton } from '@/utils/singleton';
 import { init } from './conn/Connection';
+import './global.css';
 
 const taskManager = new TaskManager();
 createSingleton(taskManager, 'taskManager').init();

@@ -1,5 +1,5 @@
 <template>
-  <div class="list-table-title">
+  <div class="ys-align-right">
     <el-button-group>
       <el-button :icon="Delete" type="danger" @click="onDeleteSelected()" />
       <el-button :icon="Plus" type="primary" @click="onEdit()" />
@@ -144,9 +144,4 @@ const editedColumns = computed(() => {
   ];
 });
 </script>
-<style lang="css">
-.list-table-title {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>
+
