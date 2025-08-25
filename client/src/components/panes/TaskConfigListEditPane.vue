@@ -29,9 +29,9 @@ interface ITaskConfigRow extends ITaskConfig {
 const props = defineProps({
   ctx: {
     type: Object as PropType<Record<string, any>>,
-    default: ()=>({}),
+    default: () => ({}),
   },
-})
+});
 
 const model = defineModel({
   type: Array as PropType<ITaskConfigRow[]>,
@@ -90,16 +90,21 @@ const columns: Column<any>[] = [
   },
   {
     key: "desc",
-    title: "Desc",
+    title: "Description",
     dataKey: "desc",
     width: 200,
+    cellRenderer: ({ rowData }) => <p>{getTaskDescription(rowData.code)}</p>,
   },
   {
     key: "operations",
     title: "Operations",
     cellRenderer: ({ rowData }) => (
       <>
-        <TaskTestPopover code={rowData.code} v-model={rowData.params} ctx={props.ctx} />
+        <TaskTestPopover
+          code={rowData.code}
+          v-model={rowData.params}
+          ctx={props.ctx}
+        />
         <ElButton
           icon={Delete}
           link
@@ -115,6 +120,11 @@ const columns: Column<any>[] = [
     align: "center",
   },
 ];
+
+function getTaskDescription(code: string) {
+  const task = getSingleton<TaskManager>("taskManager")?.getTask(code);
+  return task?.desc || "";
+}
 
 async function onDelete(rows: ITaskConfigRow[]) {
   const ids = rows.map((i) => i.id);
@@ -132,5 +142,4 @@ async function onEdit(row: ITaskConfigRow) {
     return;
   }
 }
-
 </script>
