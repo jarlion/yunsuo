@@ -17,7 +17,7 @@ import {
   type ITaskConfig,
 } from "@/models/Task";
 import { getSingleton } from "@/utils/singleton";
-import { Delete } from "@element-plus/icons-vue";
+import { Bottom, Delete, Top } from "@element-plus/icons-vue";
 import { ElButton, ElTag, ElTooltip, type Column } from "element-plus";
 import { type PropType } from "vue";
 
@@ -97,12 +97,28 @@ const columns: Column<any>[] = [
   {
     key: "operations",
     title: "Operations",
-    cellRenderer: ({ rowData }) => (
+    cellRenderer: ({ rowData,rowIndex }) => (
       <>
         <TaskTestPopover
           code={rowData.code}
           v-model={rowData.params}
           ctx={props.ctx}
+        />
+        <ElButton
+          icon={Top}
+          link
+          onClick={(e) => {
+            e.stopPropagation();
+            moveTaskBy(rowIndex, -1);
+          }}
+        />
+        <ElButton
+          icon={Bottom}
+          link
+          onClick={(e) => {
+            e.stopPropagation();
+            moveTaskBy(rowIndex, 1);
+          }}
         />
         <ElButton
           icon={Delete}
@@ -112,13 +128,23 @@ const columns: Column<any>[] = [
             e.stopPropagation();
             onDelete([rowData]);
           }}
-        ></ElButton>
+        />
       </>
     ),
     width: 150,
     align: "center",
   },
 ];
+
+function moveTaskBy(index: number, offset: number) {
+  const newIndex = index + offset;
+  if (newIndex < 0 || newIndex >= model.value.length) {
+    return;
+  }
+  const temp = model.value[index];
+  model.value[index] = model.value[newIndex];
+  model.value[newIndex] = temp;
+}
 
 function getTaskDescription(code: string) {
   const task = getSingleton<TaskManager>("taskManager")?.getTask(code);
