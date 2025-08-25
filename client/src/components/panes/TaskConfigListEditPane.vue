@@ -26,6 +26,13 @@ interface ITaskConfigRow extends ITaskConfig {
   checked: boolean;
 }
 
+const props = defineProps({
+  ctx: {
+    type: Object as PropType<Record<string, any>>,
+    default: ()=>({}),
+  },
+})
+
 const model = defineModel({
   type: Array as PropType<ITaskConfigRow[]>,
   default: [],
@@ -49,10 +56,6 @@ const ParamsCellRender = ({ cellData }: { cellData: IDefValue[] }) => {
       }
     </ElTooltip>
   );
-};
-
-const test = () => {
-  console.log("test");
 };
 
 const initParams = (code: string, rowData: ITaskConfigRow) => {
@@ -86,20 +89,17 @@ const columns: Column<any>[] = [
     ),
   },
   {
-    key: "params",
-    title: "Params",
-    dataKey: "params",
+    key: "desc",
+    title: "Desc",
+    dataKey: "desc",
     width: 200,
-    cellRenderer: ({ rowData }) => (
-      <RecordPopover v-model={rowData.params}></RecordPopover>
-    ),
   },
   {
     key: "operations",
     title: "Operations",
     cellRenderer: ({ rowData }) => (
       <>
-        <TaskTestPopover code={rowData.code} />
+        <TaskTestPopover code={rowData.code} v-model={rowData.params} ctx={props.ctx} />
         <ElButton
           icon={Delete}
           link
@@ -133,13 +133,4 @@ async function onEdit(row: ITaskConfigRow) {
   }
 }
 
-// async function init() {
-//   try {
-//     model.value = await list({});
-//   } catch (err) {
-//     ElMessage.error((err as Error).message);
-//   }
-// }
-
-// init();
 </script>

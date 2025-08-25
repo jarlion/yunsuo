@@ -20,7 +20,7 @@
         <!-- <el-input v-model="model.ctx" /> -->
       </el-form-item>
     </el-form>
-    <TaskConfigListEditPane v-model="model.tasks" :width="500" :height="300"/>
+    <TaskConfigListEditPane v-model="model.tasks" :ctx="model.ctx" :width="500" :height="300"/>
     <template #footer>
       <el-button @click="onClose">Cancel</el-button>
       <el-button type="primary" @click="onOk">Submit</el-button>
