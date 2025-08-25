@@ -13,15 +13,10 @@
           <el-table-column type="index" width="50" />
           <el-table-column prop="code" label="Code" width="100" />
           <el-table-column prop="name" label="Name" width="180" />
-          <el-table-column prop="desc" label="Desc" show-overflow-tooltip />
-          <el-table-column label="Stars" width="120">
+          <el-table-column prop="desc" label="Description" show-overflow-tooltip />
+          <el-table-column label="Stars" width="150">
             <template #default="{ row }">
-              <el-icon v-for="s in createArr(0, row.stars)">
-                <StarFilled />
-              </el-icon>
-              <el-icon v-for="s in createArr(row.stars, 5)">
-                <Star />
-              </el-icon>
+              <el-rate v-model="row.stars" :colors="colors" />
             </template>
           </el-table-column>
           <el-table-column label="Actions" width="120">
@@ -73,6 +68,8 @@ const model: ShallowRef<IPipeline[]> = shallowRef([]);
 const pipelineDlgRef = ref<typeof PipelineDialog>();
 
 const pipelineTblRef = ref<TableInstance>();
+
+const colors = ref(["#99A9BF", "#F7BA2A", "#FF9900"]);
 
 function createArr(start: number = 0, end: number = 0) {
   return new Array(end - start).fill(true);
