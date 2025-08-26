@@ -19,7 +19,7 @@
   ],
   "result": [
     {
-      "name": "result",
+      "name": "path",
       "type": "string[]",
       "desc": "查找结果数组"
     }

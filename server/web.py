@@ -183,6 +183,8 @@ def find(ls:List[Any] ,match:Callable[[Any],bool])->(Any|None):
 ### 流水线运行
 @app.route('/pl/exec', methods=['POST'])
 def pl_exec():
+    global ctx 
+    global result
     # 读取入参
     req = request.get_json()
     id = req.get('id')
@@ -197,15 +199,18 @@ def pl_exec():
             pl = find(pl_list, lambda x: x.get('id') == id)
             if not pl:
                 return response_error('id not found')
+            ctx = pl.get('ctx',{})
             tasks = pl.get('tasks')
             if not tasks:
                 return response_error('tasks not found')
             result = exec_tasks(tasks)
     except Exception as e:
         return response_error(str(e))
-    return response_success(pl_list)
+    return response_success(result)
 
 def exec_tasks(tasks:List[dict]):
+    global ctx
+    global result
     """
     执行任务列表
     :param tasks: 任务列表
@@ -213,14 +218,31 @@ def exec_tasks(tasks:List[dict]):
     """
     for task in tasks:
         code = task.get('code')
+        if not code:  # 确保code不为空
+            print(f"Warning: Task has no code attribute: {task}")
+            continue
+        
         params = init_params(task.get('params', {}))
-        # 执行任务
-        result = load_and_run(f'tasks/{code}/info.json', params=params, ctx=ctx)
+        # 先读取info.json获取任务信息
+        with open(f'tasks/{code}/info.json', 'r', encoding='utf-8') as f:
+            task_info = json.load(f)
+            script = task_info.get('script', '')  # 提供默认值
+            if not script:  # 确保script不为空
+                print(f"Warning: Task {code} has no script attribute")
+                continue
+                
+            # 确保所有参数都是字符串类型
+            script_path = os.path.join('tasks', str(code), str(script))
+            # 执行脚本
+            result = load_and_run(script_path, params=params, ctx=ctx)
+            # 打印结果
+            print(result)
         # 打印结果
         print(result)
 
 
 def init_params(params:dict):
+    global ctx
     """
     初始化参数
     :param params: 参数
@@ -304,7 +326,7 @@ def load_and_run(filepath: str, *args, **kwargs):
     mod_name = f"_dyn_{abs(hash(filepath))}"
 
     # 2. 创建 spec + 模块对象
-    spec   = importlib.util.spec_from_file_location(mod_name, filepath)
+    spec = importlib.util.spec_from_file_location(mod_name, filepath)
     if not spec:
         raise ImportError(f"Cannot find spec for {filepath}")
     module = importlib.util.module_from_spec(spec)

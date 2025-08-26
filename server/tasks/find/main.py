@@ -3,7 +3,7 @@ import re
 from typing import List, Dict, Any
 
 
-def main(params:Dict[str, Any], ctx:Dict[str, Any])->List[str]:
+def main(params:Dict[str, Any], ctx:Dict[str, Any])->Dict[str, Any]:
     root = ctx.get('root')
     # 正则表达式数组
     patterns = params.get('patterns', '[.+]')
@@ -12,7 +12,7 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any])->List[str]:
     if not patterns:
         raise ValueError("Missing required params: patterns")
 
-    result = scan_directory(root, patterns)
+    result = {"path": scan_directory(root, patterns)}
     return result
 
 

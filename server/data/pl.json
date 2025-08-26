@@ -12,23 +12,20 @@
       {
         "code": "find",
         "params": {
-          "patterns": [
-            "B\\d+"
-          ]
+          "patterns": ["B\\d+", ".*"]
         }
       },
       {
-        "checked": false,
         "code": "rename",
         "id": "1756043393860",
         "params": {
           "new_name": "zip",
-          "path": ">result.path[0]",
+          "path": ">result.get(\"path\",[])[0]",
           "rule": "ext"
         }
       }
     ],
-    "update_time": "2025-08-27 00:12:21",
+    "update_time": "2025-08-27 01:12:23",
     "create_time": "2025-08-24 10:00:00"
   },
   {
@@ -38,10 +35,17 @@
     "desc": "这是第二个流水线",
     "stars": 4,
     "ctx": {
-      "root": ""
+      "root": "v:\\"
     },
-    "tasks": [],
-    "update_time": "2025-08-24 10:00:00",
+    "tasks": [
+      {
+        "code": "find",
+        "params": {
+          "patterns": ["B\\d+", ".*"]
+        }
+      }
+    ],
+    "update_time": "2025-08-27 01:29:05",
     "create_time": "2025-08-24 10:00:00"
   }
 ]
