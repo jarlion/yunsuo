@@ -2,6 +2,7 @@
   <div class="pipeline-editor">
     <div class="pipelist-table-title">
       <el-button-group class="ml-4">
+        <el-button :icon="RefreshRight" @click="onRefresh()" />
         <el-button :icon="Delete" type="danger" @click="onDeleteSelected()" />
         <el-button :icon="Plus" type="primary" @click="onEdit()" />
       </el-button-group>
@@ -47,7 +48,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { CaretRight, Delete, Edit, Plus } from "@element-plus/icons-vue";
+import { CaretRight, Delete, Edit, Plus, RefreshRight } from "@element-plus/icons-vue";
 import {
   ElButton,
   ElCol,
@@ -90,6 +91,14 @@ async function onExec(row: IPipeline) {
 
 function onEdit(row?: IPipeline) {
   pipelineDlgRef.value?.show(row);
+}
+
+async function onRefresh() {
+  try {
+    model.value = await list({});
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
 }
 
 async function onDelete(rows: IPipeline[]) {
