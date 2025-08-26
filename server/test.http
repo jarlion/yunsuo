@@ -30,3 +30,11 @@ content-type: application/json
 {
     "code": "find"
 }
+
+### 运行任务
+POST http://localhost:5000/pl/exec HTTP/1.1
+content-type: application/json
+
+{
+    "id": "PL001"
+}

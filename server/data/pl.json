@@ -12,7 +12,9 @@
       {
         "code": "find",
         "params": {
-          "patterns": ["B\\d+"]
+          "patterns": [
+            "B\\d+"
+          ]
         }
       },
       {
@@ -20,13 +22,13 @@
         "code": "rename",
         "id": "1756043393860",
         "params": {
-          "new_name": "",
-          "path": "",
-          "rule": ""
+          "new_name": "zip",
+          "path": ">result.path[0]",
+          "rule": "ext"
         }
       }
     ],
-    "update_time": "2025-08-25 00:13:28",
+    "update_time": "2025-08-27 00:12:21",
     "create_time": "2025-08-24 10:00:00"
   },
   {

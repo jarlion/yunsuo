@@ -20,26 +20,26 @@
         <!-- <el-input v-model="model.ctx" /> -->
       </el-form-item>
     </el-form>
-    <TaskConfigListEditPane v-model="model.tasks" :ctx="model.ctx" :width="500" :height="300"/>
+    <TaskConfigListEditPane
+      v-model="model.tasks"
+      :ctx="model.ctx"
+      :width="500"
+      :height="300"
+    />
     <template #footer>
-      <el-button @click="onClose">Cancel</el-button>
-      <el-button type="primary" @click="onOk">Submit</el-button>
+      <el-button :icon="CloseBold" @click="onClose">Cancel</el-button>
+      <el-button :icon="Select" type="primary" @click="onOk">Submit</el-button>
     </template>
   </el-dialog>
 </template>
 <script setup lang="ts">
-import { clone, create, type IPipeline } from "@/models/Pipeline";
-import {
-    ElButton,
-    ElDialog,
-    ElForm,
-    ElFormItem,
-    ElInput
-} from "element-plus";
-
+import { CloseBold, Select } from "@element-plus/icons-vue";
+import { ElButton, ElDialog, ElForm, ElFormItem, ElInput } from "element-plus";
 import { ref } from "vue";
+
 import TaskConfigListEditPane from "@/components/panes/TaskConfigListEditPane.vue";
 import RecordPopover from "@/components/popover/RecordPopover.vue";
+import { clone, create, type IPipeline } from "@/models/Pipeline";
 
 const emit = defineEmits(["ok"]);
 
@@ -70,7 +70,6 @@ function onOk() {
   emit("ok", { ...model.value });
   onClose();
 }
-
 
 defineExpose({ show });
 </script>

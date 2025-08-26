@@ -1,17 +1,18 @@
 import os
 from pathlib import Path
+from typing import Dict
 
-def main(params:dict, ctx:dict)->dict:
+def main(params:Dict[str,str], ctx:Dict[str,str])->str:
     path = params.get('path')
     new_name = params.get('new_name')
     rule = params.get('rule', '')
     if not path or not new_name:
-        return {"error":"Missing required params: path, new_name"}
+        raise ValueError("Missing required params: path, new_name")
     try:
         result = rename(path, new_name, rule)
     except Exception as e:
-        return {"error":str(e)}
-    return {'result': result}
+        raise e
+    return result
 
 def rename(path:str, new_name:str, rule:str)->str:
     p = Path(path)

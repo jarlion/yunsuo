@@ -1,3 +1,4 @@
+from typing import Callable
 from flask import Flask, jsonify
 import json
 from flask import request
@@ -5,9 +6,13 @@ from flask_cors import CORS
 import os
 from datetime import datetime
 import importlib.util
+from typing import List,Any
 
 app = Flask(__name__)
 CORS(app)
+
+result = {}
+ctx = {}
 
 @app.route('/')
 def hello():
@@ -162,6 +167,73 @@ def pl_delete():
     except Exception as e:
         return response_error(str(e))
     return response_success(pl_list, "delete success")
+
+def find(ls:List[Any] ,match:Callable[[Any],bool])->(Any|None):
+    """
+    查找列表中匹配的项
+    :param ls: 列表
+    :param match: 匹配函数
+    :return: 匹配的项，未找到时返回 None
+    """
+    for item in ls:
+        if match(item):
+            return item
+    return None
+
+### 流水线运行
+@app.route('/pl/exec', methods=['POST'])
+def pl_exec():
+    # 读取入参
+    req = request.get_json()
+    id = req.get('id')
+
+    if not id:
+        return response_error('id not be empty')
+    
+    try:
+        # 读取json文件
+        with open('data/pl.json', 'r', encoding='utf-8') as f:
+            pl_list = json.load(f)
+            pl = find(pl_list, lambda x: x.get('id') == id)
+            if not pl:
+                return response_error('id not found')
+            tasks = pl.get('tasks')
+            if not tasks:
+                return response_error('tasks not found')
+            result = exec_tasks(tasks)
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(pl_list)
+
+def exec_tasks(tasks:List[dict]):
+    """
+    执行任务列表
+    :param tasks: 任务列表
+    :return: None
+    """
+    for task in tasks:
+        code = task.get('code')
+        params = init_params(task.get('params', {}))
+        # 执行任务
+        result = load_and_run(f'tasks/{code}/info.json', params=params, ctx=ctx)
+        # 打印结果
+        print(result)
+
+
+def init_params(params:dict):
+    """
+    初始化参数
+    :param params: 参数
+    :return: 初始化后的参数
+    """
+    res = {}
+    if not params: 
+        return res
+    for key, value in params.items():
+        if isinstance(value, str) and value.startswith('>'):
+            value = eval(value[1:])
+        res[key] = value
+    return res
 
 ### 任务列表
 @app.route('/task/list', methods=['POST'])
