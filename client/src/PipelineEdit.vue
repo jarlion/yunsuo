@@ -13,7 +13,11 @@
           <el-table-column type="index" width="50" />
           <el-table-column prop="code" label="Code" width="100" />
           <el-table-column prop="name" label="Name" width="180" />
-          <el-table-column prop="desc" label="Description" show-overflow-tooltip />
+          <el-table-column
+            prop="desc"
+            label="Description"
+            show-overflow-tooltip
+          />
           <el-table-column label="Stars" width="150">
             <template #default="{ row }">
               <el-rate v-model="row.stars" :colors="colors" />
@@ -22,11 +26,12 @@
           <el-table-column label="Actions" width="120">
             <template #default="{ row }">
               <el-button
-                :icon="Edit"
+                :icon="CaretRight"
                 type="primary"
                 link
-                @click="onEdit(row)"
+                @click="onExec(row)"
               />
+              <el-button :icon="Edit" link @click="onEdit(row)" />
               <el-button
                 :icon="Delete"
                 type="danger"
@@ -42,13 +47,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { Delete, Edit, Plus, Star, StarFilled } from "@element-plus/icons-vue";
-import { ref, shallowRef, type ShallowRef } from "vue";
-
+import { CaretRight, Delete, Edit, Plus } from "@element-plus/icons-vue";
 import {
   ElButton,
   ElCol,
-  ElIcon,
   ElMessage,
   ElMessageBox,
   ElRow,
@@ -56,12 +58,15 @@ import {
   ElTableColumn,
   type TableInstance,
 } from "element-plus";
+import { ref, shallowRef, type ShallowRef } from "vue";
+
 import PipelineDialog from "@/dialogs/PipelineDialog.vue";
 import type { IPipeline } from "@/models/Pipeline";
+import { add } from "@/protocols/pl/add";
 import { del } from "@/protocols/pl/del";
 import { list } from "@/protocols/pl/list";
-import { add } from "@/protocols/pl/add";
 import { update } from "@/protocols/pl/update";
+import { exec } from "./protocols/pl/exec";
 
 const model: ShallowRef<IPipeline[]> = shallowRef([]);
 
@@ -71,8 +76,16 @@ const pipelineTblRef = ref<TableInstance>();
 
 const colors = ref(["#99A9BF", "#F7BA2A", "#FF9900"]);
 
-function createArr(start: number = 0, end: number = 0) {
-  return new Array(end - start).fill(true);
+async function onExec(row: IPipeline) {
+  try {
+    const { id } = row;
+    const result = await exec({
+      id,
+    });
+    ElMessage.success("执行成功");
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
 }
 
 function onEdit(row?: IPipeline) {

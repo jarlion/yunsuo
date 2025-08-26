@@ -1,5 +1,5 @@
 import type { ITask } from "@/models/Task";
-import { request } from "../../conn/Connection";
+import { request } from "@/conn/Connection";
 
 export function list(params: IListParams) {
   return request<ITask[], IListParams>({

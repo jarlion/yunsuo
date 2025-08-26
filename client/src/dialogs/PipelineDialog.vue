@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { CloseBold, Select } from "@element-plus/icons-vue";
 import { ElButton, ElDialog, ElForm, ElFormItem, ElInput } from "element-plus";
-import { ref } from "vue";
+import { ref, unref } from "vue";
 
 import TaskConfigListEditPane from "@/components/panes/TaskConfigListEditPane.vue";
 import RecordPopover from "@/components/popover/RecordPopover.vue";
@@ -67,7 +67,7 @@ function onClose() {
 }
 
 function onOk() {
-  emit("ok", { ...model.value });
+  emit("ok", unref(model.value));
   onClose();
 }
 
