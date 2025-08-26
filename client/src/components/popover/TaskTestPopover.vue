@@ -1,5 +1,5 @@
 <template>
-  <el-popover placement="right" :width="400" trigger="click">
+  <el-popover placement="right" :width="400" trigger="click" @hide="onHide">
     <template #reference>
       <slot>
         <el-button :icon="Operation" type="primary" link> </el-button>
@@ -26,7 +26,7 @@
         <el-button-group>
           <el-button :icon="Download" @click="onSaveTemp">暂存</el-button>
           <el-button :icon="Upload" @click="onLoadTemp">加载暂存</el-button>
-          <el-button type="primary" :icon="CaretRight" @click="onTest">{{
+          <el-button type="primary" :icon="DArrowRight" @click="onTest">{{
             `调试 ${task?.name} ${code}`
           }}</el-button>
         </el-button-group>
@@ -36,17 +36,18 @@
 </template>
 
 <script lang="ts" setup>
-import { type TaskManager } from "@/models/Task";
-import { test } from "@/protocols/tasks/test";
-import { getSingleton } from "@/utils/singleton";
 import {
-  CaretRight,
+  DArrowRight,
   Download,
   Operation,
   Upload,
 } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { computed, ref, watch } from "vue";
+
+import { type TaskManager } from "@/models/Task";
+import { test } from "@/protocols/tasks/test";
+import { getSingleton } from "@/utils/singleton";
 
 const emit = defineEmits(["update:modelValue"]);
 
@@ -91,7 +92,15 @@ function initModel(model: Record<string, any>): Record<string, string> {
 
 function modelToObject(model: Record<string, string>): Record<string, any> {
   return Object.fromEntries(
-    Object.entries(model).map(([k, v]) => [k, v ? JSON.parse(v) : ""])
+    Object.entries(model).map(([k, v]) => {
+      let value = v;
+      try {
+        value = JSON.parse(v);
+      } catch (err) {
+        // 忽略解析错误
+      }
+      return [k, value];
+    })
   );
 }
 
@@ -140,4 +149,9 @@ function onLoadTemp() {
     ElMessage.error((err as Error).message);
   }
 }
+
+function onHide() {
+  emit("update:modelValue", modelToObject(modelJson.value));
+}
+
 </script>
