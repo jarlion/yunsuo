@@ -4,53 +4,41 @@ from typing import List, Dict, Any
 
 
 def main(params:Dict[str, Any], ctx:Dict[str, Any])->Dict[str, Any]:
-    root = ctx.get('root')
-    # 正则表达式数组
-    patterns = params.get('patterns', '[.+]')
+    root = ctx.get('root', '')
     if not root:
         raise ValueError("Missing required params: root")
-    if not patterns:
-        raise ValueError("Missing required params: patterns")
+    
+    patterns = params.get('patterns', '[.+]')
+    match_paths = []
+    # 安全地编译正则表达式，处理可能的语法错误
+    regexps = [re.compile(pattern) for pattern in patterns]
 
-    result = {"path": scan_directory(root, patterns)}
+    for base, dirs, files in os.walk(root):            
+        for file in files:
+            append_match_paths(match_paths, os.path.join(base, file), regexps)
+        
+        for dir in dirs:
+            append_match_paths(match_paths, os.path.join(base, dir), regexps)
+
+    result = {"path": match_paths}
     return result
 
 
-def scan_directory(root: str, patterns: List[str]) -> List[str]:
-    # 将字符串 '[.+]' 转成列表 '[.+]' -> ['[.+'] 的容错处理
-    if isinstance(patterns, str):
-        patterns = [patterns.strip("[]")] if patterns.startswith("[") else [patterns]
+def append_match_paths(match_paths: List[str], path: str, regexps: List[re.Pattern]):
+    # 如果没有有效的正则表达式，则不执行匹配
+    if not regexps:
+        return
+    
+    for regexp in regexps:
+        if regexp.search(path):
+            match_paths.append(path)
 
-    max_depth = len(patterns)
-    result = []
-
-    compiled = [re.compile(p) for p in patterns]
-
-    def _walk(current: str, depth: int):
-        if depth >= max_depth:
-            return
-        try:
-            for name in os.listdir(current):
-                full_path = os.path.join(current, name)
-                # 用当前层对应的正则匹配（depth 从 0 开始）
-                if depth < len(compiled) and compiled[depth].search(name):
-                    result.append(full_path)
-                # 如果是目录，继续深入
-                if os.path.isdir(full_path):
-                    _walk(full_path, depth + 1)
-        except PermissionError:
-            # 无权限目录直接跳过
-            pass
-
-    _walk(root, 0)
-    return result
 
 if __name__ == '__main__':
-    params = {
-        'patterns': '[.+]',
-    }
-    print(main(params, {'root': '/'}))
-    params = {
-        'patterns': '[/.py]',
-    }
-    print(main(params, {'root': '/'}))
+
+    dirs = main({'patterns':['B\\d{3}']}, {'root': 'v:\\'})
+    print(dirs)
+    # params = {
+    #     'patterns': ['/.py'],
+    # }
+    # print(main(params, {'root': '/'}))
