@@ -1,0 +1,21 @@
+{
+  "code": "iteration",
+  "name": "迭代",
+  "desc": "迭代数组",
+  "params": [
+    {
+      "name": "source",
+      "type": "any[]",
+      "required": true,
+      "desc": "迭代源数组"
+    }
+  ],
+  "result": [
+    {
+      "name": "result",
+      "type": "any",
+      "desc": "迭代结果"
+    }
+  ],
+  "script": "main.py"
+}
