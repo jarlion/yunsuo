@@ -54,7 +54,7 @@ export class TaskManager {
 }
 
 export function getComponent(task:ITask, prop:string) {
-  const type =task.params?.find(p=>p.name===prop)?.type
+  const type =task.params?.find(p=>p.name===prop)?.type;
   if (!type) {
     return 'TextInput';
   }
@@ -63,6 +63,9 @@ export function getComponent(task:ITask, prop:string) {
   }
   if (type === "code") {
     return 'CodeInput';
+  }
+  if (type.endsWith("[]")) {
+    return 'ArrayInput';
   }
 }
 

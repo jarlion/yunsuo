@@ -11,7 +11,7 @@
     },
     {
       "name": "script",
-      "type": "string",
+      "type": "code",
       "required": true,
       "desc": "脚本"
     }

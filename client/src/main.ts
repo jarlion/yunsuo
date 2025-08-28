@@ -8,6 +8,7 @@ import { init } from './conn/Connection';
 import './global.css';
 import TextInput from '@/components/input/TextInput.vue'
 import CodeInput from '@/components/input/CodeInput.vue'
+import ArrayInput from '@/components/input/ArrayInput.vue'
 
 const taskManager = new TaskManager();
 createSingleton(taskManager, 'taskManager').init();
@@ -16,6 +17,7 @@ const app = createApp(App)
 app.use(ElementPlus)
 app.component('TextInput', TextInput)
 app.component('CodeInput', CodeInput)
+app.component('ArrayInput', ArrayInput)
 app.mount('#app')
 
 init(ElMessage);
