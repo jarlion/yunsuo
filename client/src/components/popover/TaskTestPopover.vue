@@ -17,7 +17,8 @@
           :label="prop"
           :prop="prop"
         >
-          <el-input v-model="modelJson[prop]" />
+          <!-- <el-input v-model="modelJson[prop]" /> -->
+          <component :is="getComponent(task, prop)" v-model="modelJson[prop]" />
         </el-form-item>
       </el-form>
       <el-alert type="info" title="调试结果" :closable="false" />
@@ -26,15 +27,14 @@
         <el-button-group>
           <el-button :icon="Download" @click="onSaveTemp">暂存</el-button>
           <el-button :icon="Upload" @click="onLoadTemp">加载暂存</el-button>
-          <el-button type="primary" :icon="DArrowRight" @click="onTest">{{
-            `调试 ${task?.name} ${code}`
-          }}</el-button>
+          <el-button type="primary" :icon="DArrowRight" @click="onTest">
+            {{ `调试 ${task?.name} ${code}` }}
+          </el-button>
         </el-button-group>
       </div>
     </el-space>
   </el-popover>
 </template>
-
 <script lang="ts" setup>
 import {
   DArrowRight,
@@ -42,14 +42,15 @@ import {
   Operation,
   Upload,
 } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
-import { computed, ref, watch } from "vue";
+import { ElInput, ElMessage } from "element-plus";
+import { computed, defineComponent, ref, watch } from "vue";
 
-import { type TaskManager } from "@/models/Task";
+import { type TaskManager, getComponent } from "@/models/Task";
 import { test } from "@/protocols/tasks/test";
 import { getSingleton } from "@/utils/singleton";
 
 const emit = defineEmits(["update:modelValue"]);
+
 
 const props = defineProps({
   code: {
@@ -111,6 +112,13 @@ watch(
   }
 );
 
+watch(
+  () => props.modelValue,
+  (val) => {
+    modelJson.value = initModel(val);
+  }
+);
+
 async function onTest() {
   try {
     const res = await test({
@@ -153,5 +161,4 @@ function onLoadTemp() {
 function onHide() {
   emit("update:modelValue", modelToObject(modelJson.value));
 }
-
 </script>

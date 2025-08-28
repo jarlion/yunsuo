@@ -53,6 +53,19 @@ export class TaskManager {
   }
 }
 
+export function getComponent(task:ITask, prop:string) {
+  const type =task.params?.find(p=>p.name===prop)?.type
+  if (!type) {
+    return 'TextInput';
+  }
+  if (type === "string") {
+    return 'TextInput';
+  }
+  if (type === "code") {
+    return 'CodeInput';
+  }
+}
+
 export function initRecord(defs: IDefValue[]): Record<string, any> {
   const result: Record<string, any> = {};
   defs.forEach((def) => {
@@ -61,11 +74,14 @@ export function initRecord(defs: IDefValue[]): Record<string, any> {
   return result;
 }
 
-export function initRecordValue(def: IDefValue) {
+function initRecordValue(def: IDefValue) {
   if (def.default) {
     return def.default;
   }
   if (def.type === "string") {
+    return "";
+  }
+  if (def.type === "code") {
     return "";
   }
   if (def.type === "number") {
