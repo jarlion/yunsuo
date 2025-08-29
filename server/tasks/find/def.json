@@ -10,8 +10,9 @@
       "desc": "文件或目录路径匹配正则表达式数组",
       "default": [],
       "placeholder": "输入正则表达式数组"
-    }],
-    "ctx":[
+    }
+  ],
+  "ctx": [
     {
       "name": "root",
       "type": "string",
@@ -21,12 +22,9 @@
       "placeholder": "输入根目录"
     }
   ],
-  "result": [
-    {
-      "name": "path",
-      "type": "string[]",
-      "desc": "查找结果数组"
-    }
-  ],
+  "result": {
+    "type": "string[]",
+    "desc": "查找结果数组"
+  },
   "script": "main.py"
 }

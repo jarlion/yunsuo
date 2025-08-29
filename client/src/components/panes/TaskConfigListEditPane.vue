@@ -58,7 +58,6 @@ const ParamsCellRender = ({ cellData }: { cellData: IDefValue[] }) => {
 };
 
 const initParams = (code: string, rowData: ITaskConfigRow) => {
-  console.log("initParams", code);
   if (!code) {
     return;
   }

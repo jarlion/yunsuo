@@ -3,7 +3,7 @@ import re
 from typing import List, Dict, Any
 
 
-def main(params:Dict[str, Any], ctx:Dict[str, Any])->Dict[str, Any]:
+def main(params:Dict[str, Any], ctx:Dict[str, Any])->List[str]:
     root = ctx.get('root', '')
     if not root:
         raise ValueError("Missing required params: root")
@@ -20,8 +20,8 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any])->Dict[str, Any]:
         for dir in dirs:
             append_match_paths(match_paths, os.path.join(base, dir), regexps)
 
-    result = {"path": match_paths}
-    return result
+    ctx['result'] = match_paths
+    return match_paths
 
 
 def append_match_paths(match_paths: List[str], path: str, regexps: List[re.Pattern]):

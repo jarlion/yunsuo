@@ -12,6 +12,7 @@ def main(params:Dict[str,str], ctx:Dict[str,str])->str:
         result = rename(path, new_name, rule)
     except Exception as e:
         raise e
+    ctx['result'] = result
     return result
 
 def rename(path:str, new_name:str, rule:str)->str:

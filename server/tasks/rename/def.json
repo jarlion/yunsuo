@@ -24,15 +24,12 @@
       "type": "string",
       "desc": "重命名规则 ext:修改扩展名 base:修改基础名 默认修改整个文件名",
       "default": "",
-      "placeholder": "输入重命名规则"
+      "placeholder": "base|ext"
     }
   ],
-  "result": [
-    {
-      "name": "path",
-      "type": "string",
-      "desc": "重命名后的路径"
-    }
-  ],
+  "result": {
+    "type": "string",
+    "desc": "重命名后的路径"
+  },
   "script": "main.py"
 }

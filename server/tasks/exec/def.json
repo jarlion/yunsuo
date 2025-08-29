@@ -9,7 +9,7 @@
       "required": true,
       "desc": "执行源数组",
       "default": "",
-      "placeholder": "输入执行源数组"
+      "placeholder": "输入执行源数组或者 >表达式"
     },
     {
       "name": "script",
@@ -20,12 +20,9 @@
       "placeholder": "输入脚本"
     }
   ],
-  "result": [
-    {
-      "name": "result",
-      "type": "any",
-      "desc": "执行结果"
-    }
-  ],
+  "result": {
+    "type": "any[]",
+    "desc": "执行结果"
+  },
   "script": "main.py"
 }

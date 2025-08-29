@@ -2,8 +2,6 @@ import os
 import re
 from typing import List, Dict, Any
 
-result = {}
-
 def exec_script(script: str, source: Any, env: Dict[str, Any] | None = None) -> Any:
     if not env:
         env = globals()
@@ -11,8 +9,7 @@ def exec_script(script: str, source: Any, env: Dict[str, Any] | None = None) -> 
     exec(script, env, local_dict)
     return local_dict.get('output', None)
 
-def main(params:Dict[str, Any], ctx:Dict[str, Any])->Dict[str, Any]:
-    global result
+def main(params:Dict[str, Any], ctx:Dict[str, Any])->List[Any]:
     script = params.get('script', '')
     if not script:
         raise ValueError("Missing required params: script")
@@ -33,8 +30,8 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any])->Dict[str, Any]:
             if result:
                 results.append(result)
 
-    result = {"result": results}
-    return result
+    ctx['result'] = results
+    return results
 
 
 if __name__ == '__main__':

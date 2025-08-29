@@ -12,7 +12,10 @@
       {
         "code": "find",
         "params": {
-          "patterns": ["B\\d+", ".*"]
+          "patterns": [
+            "B\\d+",
+            ".*"
+          ]
         }
       },
       {
@@ -29,7 +32,7 @@
     "create_time": "2025-08-24 10:00:00"
   },
   {
-    "name": "PL002",
+    "name": "解压v",
     "id": "PL002",
     "code": "PL002",
     "desc": "这是第二个流水线",
@@ -41,11 +44,23 @@
       {
         "code": "find",
         "params": {
-          "patterns": ["B\\d+", ".*"]
+          "patterns": [
+            "v\\d{14}\\\\.*\\.mp4"
+          ]
+        }
+      },
+      {
+        "id": "1756485181427",
+        "checked": false,
+        "code": "rename",
+        "params": {
+          "path": ">result.path",
+          "new_name": ".zip",
+          "rule": "ext"
         }
       }
     ],
-    "update_time": "2025-08-27 01:29:05",
+    "update_time": "2025-08-30 00:33:14",
     "create_time": "2025-08-24 10:00:00"
   }
 ]

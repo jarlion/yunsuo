@@ -70,7 +70,6 @@ export function getComponent(task: ITask, prop: string) {
 }
 
 export function getTaskParamDef(task:ITask, prop:string) {
-  console.log("getTaskParamDef", task, prop, task.params.find((p) => p.name === prop));
   return task.params.find((p) => p.name === prop);
 }
 
