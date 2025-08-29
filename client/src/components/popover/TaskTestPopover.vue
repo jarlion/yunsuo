@@ -43,14 +43,13 @@ import {
   Upload,
 } from "@element-plus/icons-vue";
 import { ElInput, ElMessage } from "element-plus";
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 import { type TaskManager, getComponent } from "@/models/Task";
 import { test } from "@/protocols/tasks/test";
 import { getSingleton } from "@/utils/singleton";
 
 const emit = defineEmits(["update:modelValue"]);
-
 
 const props = defineProps({
   code: {
@@ -85,9 +84,12 @@ const rules = computed(() => {
 
 const result = ref("");
 
-function initModel(model: Record<string, any>): Record<string, string> {
+function initModel(model: Record<string, any>): Record<string, string | any[]> {
   return Object.fromEntries(
-    Object.entries(model).map(([k, v]) => [k, v ? JSON.stringify(v) : ""])
+    Object.entries(model).map(([k, v]) => [
+      k,
+      v ? (Array.isArray(v) ? v : JSON.stringify(v)) : "",
+    ])
   );
 }
 
