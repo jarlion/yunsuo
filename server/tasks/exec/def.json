@@ -5,7 +5,7 @@
   "params": [
     {
       "name": "source",
-      "type": "any[]",
+      "type": "string",
       "required": true,
       "desc": "执行源数组"
     },

@@ -7,18 +7,24 @@
       "name": "path",
       "type": "string",
       "required": true,
-      "desc": "文件或目录路径"
+      "desc": "文件或目录路径",
+      "default": "",
+      "placeholder": "输入文件或目录路径"
     },
     {
       "name": "new_name",
       "type": "string",
       "required": true,
-      "desc": "新名称"
+      "desc": "新名称",
+      "default": "",
+      "placeholder": "输入新名称"
     },
     {
       "name": "rule",
       "type": "string",
-      "desc": "重命名规则 ext:修改扩展名 base:修改基础名 默认修改整个文件名"
+      "desc": "重命名规则 ext:修改扩展名 base:修改基础名 默认修改整个文件名",
+      "default": "",
+      "placeholder": "输入重命名规则"
     }
   ],
   "result": [

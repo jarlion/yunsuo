@@ -7,14 +7,18 @@
       "name": "patterns",
       "type": "string[]",
       "required": true,
-      "desc": "文件或目录路径匹配正则表达式数组"
+      "desc": "文件或目录路径匹配正则表达式数组",
+      "default": [],
+      "placeholder": "输入正则表达式数组"
     }],
     "ctx":[
     {
       "name": "root",
       "type": "string",
       "required": true,
-      "desc": "用于查找的根目录"
+      "desc": "用于查找的根目录",
+      "default": "",
+      "placeholder": "输入根目录"
     }
   ],
   "result": [

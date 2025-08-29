@@ -7,7 +7,9 @@
       "name": "source",
       "type": "any[]",
       "required": true,
-      "desc": "迭代源数组"
+      "desc": "迭代源数组",
+      "default": [],
+      "placeholder": "输入数组"
     }
   ],
   "result": [

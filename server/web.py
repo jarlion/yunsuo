@@ -224,7 +224,7 @@ def exec_tasks(tasks:List[dict]):
         
         params = init_params(task.get('params', {}))
         # 先读取info.json获取任务信息
-        with open(f'tasks/{code}/info.json', 'r', encoding='utf-8') as f:
+        with open(f'tasks/{code}/def.json', 'r', encoding='utf-8') as f:
             task_info = json.load(f)
             script = task_info.get('script', '')  # 提供默认值
             if not script:  # 确保script不为空
@@ -268,7 +268,7 @@ def task_list():
         for dir in os.listdir('tasks'):
             if os.path.isdir(os.path.join('tasks', dir)):
                 # 读取json文件
-                with open(os.path.join('tasks', dir, 'info.json'), 'r', encoding='utf-8') as f:
+                with open(os.path.join('tasks', dir, 'def.json'), 'r', encoding='utf-8') as f:
                     task = json.load(f)
                     result.append(task)
 
@@ -306,7 +306,7 @@ def task_test():
     ctx = req.get('ctx',{})
     try:
         # 读取json文件
-        with open(f'tasks/{code}/info.json', 'r', encoding='utf-8') as f:
+        with open(f'tasks/{code}/def.json', 'r', encoding='utf-8') as f:
             task = json.load(f)
             script = task.get('script')
             script_path = os.path.join('tasks', code, script)
@@ -356,7 +356,7 @@ def task_start():
         return response_error('Missing required params: code')
     try:
         # 读取json文件
-        with open(f'tasks/{code}/info.json', 'r', encoding='utf-8') as f:
+        with open(f'tasks/{code}/def.json', 'r', encoding='utf-8') as f:
             task = json.load(f)
             script = task.get('script')
             script_path = os.path.join('tasks', code, script)
