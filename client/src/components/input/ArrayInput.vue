@@ -1,7 +1,7 @@
 <template>
-  <el-input v-for="i in index" v-model="model[i]" :key="i">
+  <el-input v-for="i in index" v-model="model[i]" :key="i" v-bind="$attrs">
     <template #append>
-      <el-button :icon="Delete" @click="onDelete(i)" type="danger"></el-button>
+      <el-button :icon="Delete" @click="onDelete(i)" type="danger" />
     </template>
   </el-input>
 </template>

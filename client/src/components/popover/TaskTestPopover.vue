@@ -18,7 +18,7 @@
           :prop="prop"
         >
           <!-- <el-input v-model="modelJson[prop]" /> -->
-          <component :is="getComponent(task, prop)" v-model="modelJson[prop]" />
+          <component :is="getComponent(task, prop)" v-model="modelJson[prop]" :placeholder="getTaskParamDef(task, prop)?.placeholder" />
         </el-form-item>
       </el-form>
       <el-alert type="info" title="调试结果" :closable="false" />
@@ -45,7 +45,7 @@ import {
 import { ElInput, ElMessage } from "element-plus";
 import { computed, ref, watch } from "vue";
 
-import { type TaskManager, getComponent } from "@/models/Task";
+import { type TaskManager, getComponent, getTaskParamDef } from "@/models/Task";
 import { test } from "@/protocols/tasks/test";
 import { getSingleton } from "@/utils/singleton";
 

@@ -1,5 +1,5 @@
 <template>
-  <el-input v-model="model" />
+  <el-input v-model="model" v-bind="$attrs"/>
 </template>
 <script lang="ts" setup>
 import { defineModel } from 'vue'

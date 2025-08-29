@@ -53,20 +53,25 @@ export class TaskManager {
   }
 }
 
-export function getComponent(task:ITask, prop:string) {
-  const type =task.params?.find(p=>p.name===prop)?.type;
+export function getComponent(task: ITask, prop: string) {
+  const type = task.params?.find((p) => p.name === prop)?.type;
   if (!type) {
-    return 'TextInput';
+    return "TextInput";
   }
   if (type === "string") {
-    return 'TextInput';
+    return "TextInput";
   }
   if (type === "code") {
-    return 'CodeInput';
+    return "CodeInput";
   }
   if (type.endsWith("[]")) {
-    return 'ArrayInput';
+    return "ArrayInput";
   }
+}
+
+export function getTaskParamDef(task:ITask, prop:string) {
+  console.log("getTaskParamDef", task, prop, task.params.find((p) => p.name === prop));
+  return task.params.find((p) => p.name === prop);
 }
 
 export function initRecord(defs: IDefValue[]): Record<string, any> {
