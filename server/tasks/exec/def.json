@@ -7,13 +7,17 @@
       "name": "source",
       "type": "string",
       "required": true,
-      "desc": "执行源数组"
+      "desc": "执行源数组",
+      "default": "",
+      "placeholder": "输入执行源数组"
     },
     {
       "name": "script",
       "type": "code",
       "required": true,
-      "desc": "脚本"
+      "desc": "脚本",
+      "default": "",
+      "placeholder": "输入脚本"
     }
   ],
   "result": [
