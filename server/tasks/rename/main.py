@@ -2,12 +2,14 @@ import os
 from pathlib import Path
 from typing import Dict
 
-def main(params:Dict[str,str], ctx:Dict[str,str])->str:
+def main(params: Dict[str,str], ctx: Dict[str,str])->str:
     path = params.get('path')
     new_name = params.get('new_name')
     rule = params.get('rule', '')
     if not path or not new_name:
         raise ValueError("Missing required params: path, new_name")
+    if path.startswith('>'):
+        path = eval(path[1:], globals(), ctx)
     try:
         result = rename(path, new_name, rule)
     except Exception as e:

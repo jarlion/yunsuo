@@ -6,13 +6,10 @@ from flask_cors import CORS
 import os
 from datetime import datetime
 import importlib.util
-from typing import List,Any
+from typing import List,Dict,Any
 
 app = Flask(__name__)
 CORS(app)
-
-result = {}
-ctx = {}
 
 @app.route('/')
 def hello():
@@ -183,8 +180,6 @@ def find(ls:List[Any] ,match:Callable[[Any],bool])->(Any|None):
 ### 流水线运行
 @app.route('/pl/exec', methods=['POST'])
 def pl_exec():
-    global ctx 
-    global result
     # 读取入参
     req = request.get_json()
     id = req.get('id')
@@ -203,14 +198,12 @@ def pl_exec():
             tasks = pl.get('tasks')
             if not tasks:
                 return response_error('tasks not found')
-            result = exec_tasks(tasks)
+            result = exec_tasks(tasks, ctx)
     except Exception as e:
         return response_error(str(e))
     return response_success(result)
 
-def exec_tasks(tasks:List[dict]):
-    global ctx
-    global result
+def exec_tasks(tasks:List[dict], ctx: Dict[str, Any]):
     """
     执行任务列表
     :param tasks: 任务列表
@@ -222,7 +215,7 @@ def exec_tasks(tasks:List[dict]):
             print(f"Warning: Task has no code attribute: {task}")
             continue
         
-        params = init_params(task.get('params', {}))
+        params = init_params(task.get('params', {}), ctx)
         # 先读取info.json获取任务信息
         with open(f'tasks/{code}/def.json', 'r', encoding='utf-8') as f:
             task_info = json.load(f)
@@ -235,14 +228,14 @@ def exec_tasks(tasks:List[dict]):
             script_path = os.path.join('tasks', str(code), str(script))
             # 执行脚本
             result = load_and_run(script_path, params=params, ctx=ctx)
+            ctx['result'] = result
             # 打印结果
             print(result)
         # 打印结果
         print(result)
 
 
-def init_params(params:dict):
-    global ctx
+def init_params(params:Dict[str, str], ctx: Dict[str, Any]):
     """
     初始化参数
     :param params: 参数
