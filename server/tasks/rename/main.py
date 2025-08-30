@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
-from typing import Dict
+from typing import Dict,Any
 
-def main(params: Dict[str,str], ctx: Dict[str,str])->str:
+def main(params: Dict[str,str], ctx: Dict[str,Any])->str:
     path = params.get('path')
     new_name = params.get('new_name')
     rule = params.get('rule', '')
@@ -15,7 +15,6 @@ def main(params: Dict[str,str], ctx: Dict[str,str])->str:
     except Exception as e:
         raise e
     print('rename result:', result)
-    ctx['result'] = result
     return result
 
 def rename(path:str, new_name:str, rule:str)->str:
@@ -26,15 +25,16 @@ def rename(path:str, new_name:str, rule:str)->str:
     elif rule == 'base':
         dst = str(p.with_stem(new_name))
     else:
-        dst = p + new_name
+        dst = str(p) + new_name
 
     os.rename(path, dst)
     return dst
 
 if __name__ == '__main__':
     params = {
-        'path': 'test1',
-        'new_name': 'zip',
-        'rule': 'ext',
+        "new_name": ".zip",
+        "path": ">result[0]",
+        "rule": ""
     }
-    print(main(params, {}))
+    ctx = {"result": ["v:\\v20250825100235\\六花 喝醉 战斗衔接  锤 击中踩点（邪王真眼） S1 .mp4"]}
+    print(main(params, ctx))
