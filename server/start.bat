@@ -28,6 +28,6 @@ if %ERRORLEVEL% NEQ 0 (
 
 REM 启动服务
 echo 启动服务端...
-python main.py
+python web.py
 
 pause

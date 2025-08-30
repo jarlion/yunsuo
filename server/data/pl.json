@@ -10,15 +10,19 @@
     },
     "tasks": [
       {
+        "id": "T1756043393859",
         "code": "find",
         "params": {
-          "patterns": ["B\\d+", ".*"]
+          "patterns": [
+            "B\\d+",
+            ".*"
+          ]
         },
         "on": true
       },
       {
         "code": "rename",
-        "id": "1756043393860",
+        "id": "T1756043393860",
         "params": {
           "new_name": "zip",
           "path": ">result.get(\"path\",[])[0]",
@@ -41,9 +45,12 @@
     },
     "tasks": [
       {
+        "id": "T1756043393861",
         "code": "find",
         "params": {
-          "patterns": ["v\\d{14}\\\\.*\\.mp4"]
+          "patterns": [
+            "v\\d{14}\\\\.*\\.mp4"
+          ]
         },
         "on": true
       },
@@ -72,35 +79,28 @@
     "stars": 4,
     "tasks": [
       {
+        "id": "T1756043393860",
         "code": "find",
         "params": {
-          "patterns": ["v\\d{14}\\\\.*\\.mp4"]
+          "patterns": [
+            "v\\d{14}\\\\.*\\.mp4"
+          ]
         },
         "on": true
       },
       {
         "checked": false,
         "code": "rename",
-        "id": "1756485181427",
+        "id": "T1756485181427",
         "params": {
           "new_name": ".zip",
           "path": ">result.path",
           "rule": "ext"
-        }
+        },
+        "on": true
       }
     ],
     "create_time": "2025-08-30 20:47:47",
     "update_time": "2025-08-30 20:47:47"
-  },
-  {
-    "id": "PL202508302101569080",
-    "code": "",
-    "name": "55",
-    "ctx": {},
-    "desc": "",
-    "stars": 0,
-    "tasks": [],
-    "create_time": "2025-08-30 21:01:56",
-    "update_time": "2025-08-30 21:01:56"
   }
 ]
