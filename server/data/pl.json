@@ -12,11 +12,9 @@
       {
         "code": "find",
         "params": {
-          "patterns": [
-            "B\\d+",
-            ".*"
-          ]
-        }
+          "patterns": ["B\\d+", ".*"]
+        },
+        "on": true
       },
       {
         "code": "rename",
@@ -25,7 +23,8 @@
           "new_name": "zip",
           "path": ">result.get(\"path\",[])[0]",
           "rule": "ext"
-        }
+        },
+        "on": true
       }
     ],
     "update_time": "2025-08-27 01:12:23",
@@ -44,23 +43,64 @@
       {
         "code": "find",
         "params": {
-          "patterns": [
-            "v\\d{14}\\\\.*\\.mp4"
-          ]
-        }
+          "patterns": ["v\\d{14}\\\\.*\\.mp4"]
+        },
+        "on": true
       },
       {
+        "code": "rename",
         "id": "1756485181427",
+        "params": {
+          "new_name": ".zip",
+          "path": ">result.path",
+          "rule": "ext"
+        },
+        "on": true
+      }
+    ],
+    "update_time": "2025-08-30 01:07:42",
+    "create_time": "2025-08-24 10:00:00"
+  },
+  {
+    "id": "PL202508302047476620",
+    "code": "PL002",
+    "name": "解压v",
+    "ctx": {
+      "root": "v:\\"
+    },
+    "desc": "这是第二个流水线",
+    "stars": 4,
+    "tasks": [
+      {
+        "code": "find",
+        "params": {
+          "patterns": ["v\\d{14}\\\\.*\\.mp4"]
+        },
+        "on": true
+      },
+      {
         "checked": false,
         "code": "rename",
+        "id": "1756485181427",
         "params": {
-          "path": ">result.path",
           "new_name": ".zip",
+          "path": ">result.path",
           "rule": "ext"
         }
       }
     ],
-    "update_time": "2025-08-30 00:33:14",
-    "create_time": "2025-08-24 10:00:00"
+    "create_time": "2025-08-30 20:47:47",
+    "update_time": "2025-08-30 20:47:47"
+  },
+  {
+    "id": "PL202508302101569080",
+    "code": "",
+    "name": "55",
+    "ctx": {},
+    "desc": "",
+    "stars": 0,
+    "tasks": [],
+    "create_time": "2025-08-30 21:01:56",
+    "update_time": "2025-08-30 21:01:56"
   }
 ]

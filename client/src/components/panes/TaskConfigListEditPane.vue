@@ -4,22 +4,22 @@
     v-model="model"
     @delete="onDelete"
     @edit="onEdit"
-  />
-</template>
+    />
+  </template>
 <script setup lang="tsx">
+import { Bottom, Delete, Top } from "@element-plus/icons-vue";
+import { ElButton, ElSwitch, type Column } from "element-plus";
+import { type PropType } from "vue";
+
 import ListEditPane from "@/components/panes/ListEditPane.vue";
 import TaskTestPopover from "@/components/popover/TaskTestPopover.vue";
 import TaskSelect from "@/components/select/TaskSelect.vue";
 import {
   initRecord,
   TaskManager,
-  type IDefValue,
-  type ITaskConfig,
+  type ITaskConfig
 } from "@/models/Task";
 import { getSingleton } from "@/utils/singleton";
-import { Bottom, Delete, Top } from "@element-plus/icons-vue";
-import { ElButton, ElTag, ElTooltip, type Column } from "element-plus";
-import { type PropType } from "vue";
 
 interface ITaskConfigRow extends ITaskConfig {
   checked: boolean;
@@ -36,26 +36,6 @@ const model = defineModel({
   type: Array as PropType<ITaskConfigRow[]>,
   default: [],
 });
-
-const ParamsCellRender = ({ cellData }: { cellData: IDefValue[] }) => {
-  if (!cellData) {
-    return <p>--</p>;
-  }
-  const keys = cellData;
-  const more = keys.length > 1 ? `+${keys.length - 1}` : "";
-  return (
-    <ElTooltip content={keys.map((i) => `${i.name}:${i.type}`).join(",")}>
-      {
-        <div>
-          {[
-            keys[0] && <ElTag>{`${keys[0].name}:${keys[0].type}`}</ElTag>,
-            more && <ElTag>{more}</ElTag>,
-          ]}
-        </div>
-      }
-    </ElTooltip>
-  );
-};
 
 const initParams = (code: string, rowData: ITaskConfigRow) => {
   if (!code) {
@@ -92,6 +72,13 @@ const columns: Column<any>[] = [
     dataKey: "desc",
     width: 200,
     cellRenderer: ({ rowData }) => <p>{getTaskDescription(rowData.code)}</p>,
+  },
+  {
+    key: "on",
+    title: "On",
+    dataKey: "on",
+    width: 200,
+    cellRenderer: ({ rowData }) => <ElSwitch v-model={rowData.on} />,
   },
   {
     key: "operations",
