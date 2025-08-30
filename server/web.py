@@ -111,29 +111,25 @@ def pl_update():
     tasks = req.get('tasks')
     try:
         # 读取json文件
-        with open('data/pl.json', 'r', encoding='utf-8') as f:
-            pl_list = json.load(f)
-            # 如果 id 有值 则根据 id 精确匹配
-            if not id:
-                return response_error('id not be empty')
+        pl_list = app.data.get('pl')
+        # 如果 id 有值 则根据 id 精确匹配
+        if not id:
+            return response_error('id not be empty')
 
-            # 查找 id 匹配的项
-            pl = find_item_by_id(pl_list, id)
-            if not pl:
-                return response_error('id not found')
-            
-            pl['ctx'] = ctx
-            pl['code'] = code
-            pl['name'] = name
-            pl['desc'] = desc
-            pl['stars'] = stars
-            pl['tasks'] = tasks
-            # 更新时间
-            pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        # 查找 id 匹配的项
+        pl = find_item_by_id(pl_list, id)
+        if not pl:
+            return response_error('id not found')
+        
+        pl['ctx'] = ctx
+        pl['code'] = code
+        pl['name'] = name
+        pl['desc'] = desc
+        pl['stars'] = stars
+        pl['tasks'] = tasks
+        # 更新时间
+        pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        # 写入json文件
-        with open('data/pl.json', 'w', encoding='utf-8') as f:
-            json.dump(pl_list, f, ensure_ascii=False, indent=2)
     except Exception as e:
         return response_error(str(e))
     return response_success(pl_list)
@@ -354,6 +350,12 @@ def response_success(data, msg='success', page:dict={}):
 
 def response_error(msg='error', code='error'):
     return jsonify({'code': code, 'msg': msg})
+
+@app.route('/all/save', methods=['POST']) 
+def all_save():
+    # 读取入
+    shutdown_hook()
+    return response_success('success')
 
 @app.teardown_appcontext
 def shutdown_hook(exception = None):
