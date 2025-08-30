@@ -25,9 +25,7 @@ def pl_list():
     # ctx = req.get('ctx')
     desc = req.get('desc')
     # tasks = req.get('tasks')
-    print("data", app.data.get('pl'))
-
-    
+   
     try:
         pl_list = app.data.get('pl')
         # 如果 code 有值 则根据 code 精确匹配
@@ -141,26 +139,18 @@ def pl_update():
     return response_success(pl_list)
 
 ### 流水线删除
-@app.route('/pl/delete', methods=['POST'])
+@app.route('/pl/del', methods=['POST'])
 def pl_delete():
-    # 读取入参
     ids = request.get_json()
-    try:
-        # 读取json文件
-        with open('data/pl.json', 'r', encoding='utf-8') as f:
-            pl_list = json.load(f)
-            # 如果 id 有值 则根据 id 精确匹配
-            if ids:
-                pl_list = [pl for pl in pl_list if pl.get('id') not in ids]
-            # 否则返回所有任务
-            else:
-                return response_error('id not found')
-        # 写入json文件
-        with open('data/pl.json', 'w', encoding='utf-8') as f:
-            json.dump(pl_list, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        return response_error(str(e))
-    return response_success(pl_list, "delete success")
+    if not ids:
+        return response_error('Missing required params')
+    pl_list = app.data.get('pl')
+    if not pl_list:
+        return response_error('pl_list is empty')
+    # 查找并删除指定ids的元素
+    pl_list[:] = [item for item in pl_list if item.get('id') not in ids]
+    
+    return response_success(pl_list, msg="删除成功")
 
 def find(ls:List[Any] ,match:Callable[[Any],bool])->(Any|None):
     """
@@ -206,6 +196,7 @@ def exec_tasks(tasks:List[dict], ctx: Dict[str, Any]):
     :param tasks: 任务列表
     :return: None
     """
+    result = None
     for task in tasks:
         if not task.get('on'):
             continue
@@ -230,8 +221,7 @@ def exec_tasks(tasks:List[dict], ctx: Dict[str, Any]):
             ctx['result'] = result
             # 打印结果
             print(result)
-        # 打印结果
-        print(result)
+    return result
 
 
 def init_params(params:Dict[str, str], ctx: Dict[str, Any]):
@@ -359,10 +349,6 @@ def task_start():
     return response_success(result)
 
 
-@app.route('/pl/del')
-def pl_del():
-    return 'pl_del'
-
 def response_success(data, msg='success', page:dict={}):
     return jsonify({'code': 'success', 'msg': msg, 'data': data, 'page': page})
 
@@ -375,9 +361,11 @@ def shutdown_hook(exception = None):
     pl_list = app.data.get('pl')
     with open('data/pl.json', 'w', encoding='utf-8') as f:
         json.dump(pl_list, f, ensure_ascii=False, indent=2)
+    tasks_list = app.data.get('tasks')
+    with open('data/tasks.json', 'w', encoding='utf-8') as f:
+        json.dump(tasks_list, f, ensure_ascii=False, indent=2)
 
 def init_data():
-    pl = []
     if not os.path.exists('data'):
         os.makedirs('data')
     if not os.path.exists('data/pl.json'):
@@ -385,7 +373,12 @@ def init_data():
             pl = json.dump({'pl': []}, f)
     with open('data/pl.json', 'r', encoding='utf-8') as f:
         pl = json.load(f)
-    return {"pl": pl}
+    if not os.path.exists('data/tasks.json'):
+        with open('data/tasks.json', 'w', encoding='utf-8') as f:
+            tasks = json.dump({'tasks': []}, f)
+    with open('data/tasks.json', 'r', encoding='utf-8') as f:
+        tasks = json.load(f)
+    return {"pl": pl, "tasks": tasks}
 
 if __name__ == '__main__':
     app.data= init_data()
