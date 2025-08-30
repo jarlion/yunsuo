@@ -2,7 +2,7 @@
   <el-dialog
     :title="title"
     v-model="visible"
-    width="50%"
+    width="700"
     :before-close="onClose"
   >
     <el-form :model="model" :rules="rules" ref="formRef" label-width="120px">

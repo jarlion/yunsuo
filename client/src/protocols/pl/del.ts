@@ -3,7 +3,7 @@ import { request } from "@/conn/Connection";
 
 export function del(ids: string[]) {
   return request<IPipeline[], string[]>({
-    url: "pl/delete",
+    url: "pl/del",
     params: ids,
   });
 }

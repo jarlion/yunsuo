@@ -14,6 +14,7 @@ def main(params: Dict[str,str], ctx: Dict[str,str])->str:
         result = rename(path, new_name, rule)
     except Exception as e:
         raise e
+    print('rename result:', result)
     ctx['result'] = result
     return result
 
@@ -25,7 +26,7 @@ def rename(path:str, new_name:str, rule:str)->str:
     elif rule == 'base':
         dst = str(p.with_stem(new_name))
     else:
-        dst = str(p.with_name(new_name))
+        dst = p + new_name
 
     os.rename(path, dst)
     return dst

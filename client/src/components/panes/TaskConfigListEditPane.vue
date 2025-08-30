@@ -4,8 +4,8 @@
     v-model="model"
     @delete="onDelete"
     @edit="onEdit"
-    />
-  </template>
+  />
+</template>
 <script setup lang="tsx">
 import { Bottom, Delete, Top } from "@element-plus/icons-vue";
 import { ElButton, ElSwitch, type Column } from "element-plus";
@@ -14,11 +14,7 @@ import { type PropType } from "vue";
 import ListEditPane from "@/components/panes/ListEditPane.vue";
 import TaskTestPopover from "@/components/popover/TaskTestPopover.vue";
 import TaskSelect from "@/components/select/TaskSelect.vue";
-import {
-  initRecord,
-  TaskManager,
-  type ITaskConfig
-} from "@/models/Task";
+import { initRecord, TaskManager, type ITaskConfig } from "@/models/Task";
 import { getSingleton } from "@/utils/singleton";
 
 interface ITaskConfigRow extends ITaskConfig {
@@ -58,7 +54,7 @@ const columns: Column<any>[] = [
     key: "code",
     title: "Code",
     dataKey: "code",
-    width: 200,
+    width: 120,
     cellRenderer: ({ rowData }) => (
       <TaskSelect
         v-model={rowData.code}
@@ -77,13 +73,13 @@ const columns: Column<any>[] = [
     key: "on",
     title: "On",
     dataKey: "on",
-    width: 200,
+    width: 80,
     cellRenderer: ({ rowData }) => <ElSwitch v-model={rowData.on} />,
   },
   {
     key: "operations",
     title: "Operations",
-    cellRenderer: ({ rowData,rowIndex }) => (
+    cellRenderer: ({ rowData, rowIndex }) => (
       <>
         <TaskTestPopover
           code={rowData.code}
@@ -117,8 +113,7 @@ const columns: Column<any>[] = [
         />
       </>
     ),
-    width: 150,
-    align: "center",
+    width: 130,
   },
 ];
 
