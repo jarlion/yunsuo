@@ -4,6 +4,7 @@ import json
 from flask import request
 from flask_cors import CORS
 import os
+import random
 from datetime import datetime
 import importlib.util
 from typing import List,Dict,Any
@@ -24,25 +25,25 @@ def pl_list():
     # ctx = req.get('ctx')
     desc = req.get('desc')
     # tasks = req.get('tasks')
+    print("data", app.data.get('pl'))
+
     
     try:
-        # 读取json文件
-        with open('data/pl.json', 'r', encoding='utf-8') as f:
-            pl_list = json.load(f)
-            # 如果 code 有值 则根据 code 精确匹配
-            if code:
-                pl_list = [pl for pl in pl_list if pl.get('code') == code]
+        pl_list = app.data.get('pl')
+        # 如果 code 有值 则根据 code 精确匹配
+        if code:
+            pl_list = [pl for pl in pl_list if pl.get('code') == code]
 
-            # 如果 name 有值 则根据 name 模糊匹配
-            if name:
-                pl_list = [pl for pl in pl_list if name.lower() in pl.get('name', '').lower()]
+        # 如果 name 有值 则根据 name 模糊匹配
+        if name:
+            pl_list = [pl for pl in pl_list if name.lower() in pl.get('name', '').lower()]
 
-            # 如果 desc 有值 则根据 desc 模糊匹配
-            if desc:
-                pl_list = [pl for pl in pl_list if desc.lower() in pl.get('desc', '').lower()]
+        # 如果 desc 有值 则根据 desc 模糊匹配
+        if desc:
+            pl_list = [pl for pl in pl_list if desc.lower() in pl.get('desc', '').lower()]
 
-            # 按照 stars 降序排列
-            pl_list.sort(key=lambda x: x.get('stars', 0), reverse=True)
+        # 按照 stars 降序排列
+        pl_list.sort(key=lambda x: x.get('stars', 0), reverse=True)
 
     except Exception as e:
         return response_error(str(e))
@@ -54,33 +55,29 @@ def pl_list():
 def pl_add():
     # 读取入参
     req = request.get_json()
-    id = 'PL'+datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    id = f"PL{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}"
     code = req.get('code')
     name = req.get('name')
     ctx = req.get('ctx',{})
     desc = req.get('desc')
     stars = req.get('stars')
     tasks = req.get('tasks')
+
+    pl_list = app.data.get('pl')
     try:
-        # 读取json文件
-        with open('data/pl.json', 'r', encoding='utf-8') as f:
-            pl_list = json.load(f)
-            # 新增
-            pl = {
-                'id': id,
-                'code': code,
-                'name': name,
-                'ctx': ctx,
-                'desc': desc,
-                'stars': stars,
-                'tasks': tasks,
-                'create_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            }
-            pl_list.append(pl)
-            # 写入json文件
-        with open('data/pl.json', 'w', encoding='utf-8') as f:
-            json.dump(pl_list, f, ensure_ascii=False, indent=2)
+        # 新增
+        pl = {
+            'id': id,
+            'code': code,
+            'name': name,
+            'ctx': ctx,
+            'desc': desc,
+            'stars': stars,
+            'tasks': tasks,
+            'create_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        pl_list.append(pl)
     except Exception as e:
         return response_error(str(e))
     return response_success(pl_list)
@@ -210,6 +207,8 @@ def exec_tasks(tasks:List[dict], ctx: Dict[str, Any]):
     :return: None
     """
     for task in tasks:
+        if not task.get('on'):
+            continue
         code = task.get('code')
         if not code:  # 确保code不为空
             print(f"Warning: Task has no code attribute: {task}")
@@ -370,20 +369,24 @@ def response_success(data, msg='success', page:dict={}):
 def response_error(msg='error', code='error'):
     return jsonify({'code': code, 'msg': msg})
 
+@app.teardown_appcontext
+def shutdown_hook(exception = None):
+    # 写入json文件
+    pl_list = app.data.get('pl')
+    with open('data/pl.json', 'w', encoding='utf-8') as f:
+        json.dump(pl_list, f, ensure_ascii=False, indent=2)
 
-
-class Pipe:
-    def __init__(self, links:dict):
-        self.links = links
-    
-    def transform(self, data:dict):
-        result = {}
-        for link in self.links:
-            result[self.links[link]] = data[link]
-        return result
-
-
-
+def init_data():
+    pl = []
+    if not os.path.exists('data'):
+        os.makedirs('data')
+    if not os.path.exists('data/pl.json'):
+        with open('data/pl.json', 'w', encoding='utf-8') as f:
+            pl = json.dump({'pl': []}, f)
+    with open('data/pl.json', 'r', encoding='utf-8') as f:
+        pl = json.load(f)
+    return {"pl": pl}
 
 if __name__ == '__main__':
+    app.data= init_data()
     app.run(debug=True, host='0.0.0.0', port=5000)
