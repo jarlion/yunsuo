@@ -1,0 +1,34 @@
+{
+  "code": "loop",
+  "name": "循环",
+  "desc": "循环执行任务",
+  "params": [
+    {
+      "name": "before",
+      "type": "code",
+      "desc": "循环前执行",
+      "default": "",
+      "placeholder": "输入循环前执行的代码"
+    },
+    {
+      "name": "condition",
+      "type": "string",
+      "required": true,
+      "desc": "循环条件",
+      "default": "",
+      "placeholder": "输入循环条件的代码或者 >表达式"
+    },
+    {
+      "name": "after",
+      "type": "code",
+      "desc": "循环后执行",
+      "default": "",
+      "placeholder": "输入循环后执行的代码"
+    }
+  ],
+  "result": {
+    "type": "any",
+    "desc": "执行结果"
+  },
+  "script": "main.py"
+}
