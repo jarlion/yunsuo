@@ -4,7 +4,7 @@ const conn = axios.create({
   baseURL: "http://localhost:5000/",
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json;charset=utf-8",
   },
 });
 

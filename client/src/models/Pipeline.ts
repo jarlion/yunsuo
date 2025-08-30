@@ -12,7 +12,7 @@ export interface IPipeline {
 
 export function create(): IPipeline {
   return {
-    id:  `PL${Date.now()}`,
+    id: "",
     name: "",
     code: "",
     ctx: {},

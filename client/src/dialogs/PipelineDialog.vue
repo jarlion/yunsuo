@@ -1,14 +1,11 @@
 <template>
   <el-dialog
-    title="Pipeline Dialog"
+    :title="title"
     v-model="visible"
     width="50%"
     :before-close="onClose"
   >
     <el-form :model="model" :rules="rules" ref="formRef" label-width="120px">
-      <el-form-item label="Code" prop="code">
-        <el-input v-model="model.code" :disabled="!isCodeEditable" />
-      </el-form-item>
       <el-form-item label="Name" prop="name">
         <el-input v-model="model.name" />
       </el-form-item>
@@ -16,8 +13,7 @@
         <el-input v-model="model.desc" />
       </el-form-item>
       <el-form-item label="Context" prop="ctx">
-        <RecordPopover v-model="model.ctx" />
-        <!-- <el-input v-model="model.ctx" /> -->
+        <ObjectInput v-model="model.ctx" />
       </el-form-item>
     </el-form>
     <TaskConfigListEditPane
@@ -38,12 +34,13 @@ import { ElButton, ElDialog, ElForm, ElFormItem, ElInput } from "element-plus";
 import { ref, unref } from "vue";
 
 import TaskConfigListEditPane from "@/components/panes/TaskConfigListEditPane.vue";
-import RecordPopover from "@/components/popover/RecordPopover.vue";
 import { clone, create, type IPipeline } from "@/models/Pipeline";
+import ObjectInput from "@/components/input/ObjectInput.vue";
 
 const emit = defineEmits(["ok"]);
 
 const visible = ref(false);
+const title = ref("");
 const model = ref<IPipeline>(create());
 const rules = ref({
   name: [{ required: true, message: "请输入名称", trigger: "blur" }],
@@ -57,7 +54,7 @@ function show(pipeline?: IPipeline) {
     model.value = clone(pipeline);
     isCodeEditable.value = pipeline.code?.length === 0;
   }
-
+  title.value = model.value.id ? `编辑 ${model.value.id.toUpperCase()}` : "新增流水线";
   visible.value = true;
 }
 

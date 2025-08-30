@@ -138,9 +138,8 @@ async function onDelete(rows: IPipeline[]) {
 }
 
 async function onOk(pipeline: IPipeline) {
-  const isCreate = model.value.find((p) => p.id === pipeline.id);
   try {
-    if (isCreate === null) {
+    if (!pipeline.id) {
       model.value = await add(pipeline);
     } else {
       model.value = await update(pipeline);

@@ -18,7 +18,11 @@
           :prop="prop"
         >
           <!-- <el-input v-model="modelJson[prop]" /> -->
-          <component :is="getComponent(task, prop)" v-model="modelJson[prop]" :placeholder="getTaskParamDef(task, prop)?.placeholder" />
+          <component
+            :is="getComponent(task, prop)"
+            v-model="modelJson[prop]"
+            :placeholder="getTaskParamDef(task, prop)?.placeholder"
+          />
         </el-form-item>
       </el-form>
       <el-alert type="info" title="调试结果" :closable="false" />
@@ -88,7 +92,11 @@ function initModel(model: Record<string, any>): Record<string, string | any[]> {
   return Object.fromEntries(
     Object.entries(model).map(([k, v]) => [
       k,
-      v ? (Array.isArray(v) ? v : JSON.stringify(v)) : "",
+      v
+        ? typeof v === "string" && v.match(/^[\{\[]/)
+          ? JSON.stringify(v)
+          : v
+        : "",
     ])
   );
 }
