@@ -12,7 +12,7 @@
         <el-table ref="pipelineTblRef" :data="model" style="width: 100%">
           <el-table-column type="selection" width="55" />
           <el-table-column type="index" width="50" />
-          <el-table-column prop="code" label="Code" width="100" />
+          <el-table-column prop="id" label="ID" width="200" />
           <el-table-column prop="name" label="Name" width="180" />
           <el-table-column
             prop="desc"
@@ -24,7 +24,7 @@
               <el-rate v-model="row.stars" :colors="colors" />
             </template>
           </el-table-column>
-          <el-table-column label="Actions" width="120">
+          <el-table-column label="Actions" width="150">
             <template #default="{ row }">
               <el-button
                 :icon="CaretRight"
@@ -33,6 +33,7 @@
                 @click="onExec(row)"
               />
               <el-button :icon="Edit" link @click="onEdit(row)" />
+              <el-button :icon="CopyDocument" link @click="onCopy(row)" />
               <el-button
                 :icon="Delete"
                 type="danger"
@@ -48,7 +49,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { CaretRight, Delete, Edit, Plus, RefreshRight } from "@element-plus/icons-vue";
+import { CaretRight, Delete, Edit, Plus, RefreshRight, CopyDocument } from "@element-plus/icons-vue";
 import {
   ElButton,
   ElCol,
@@ -62,7 +63,7 @@ import {
 import { ref, shallowRef, type ShallowRef } from "vue";
 
 import PipelineDialog from "@/dialogs/PipelineDialog.vue";
-import type { IPipeline } from "@/models/Pipeline";
+import { clone, type IPipeline } from "@/models/Pipeline";
 import { add } from "@/protocols/pl/add";
 import { del } from "@/protocols/pl/del";
 import { list } from "@/protocols/pl/list";
@@ -91,6 +92,12 @@ async function onExec(row: IPipeline) {
 
 function onEdit(row?: IPipeline) {
   pipelineDlgRef.value?.show(row);
+}
+
+function onCopy(row: IPipeline) {
+  const newPipeline = clone(row);
+  newPipeline.id = '';
+  onEdit(newPipeline);
 }
 
 async function onRefresh() {
