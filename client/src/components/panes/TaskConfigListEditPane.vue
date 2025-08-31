@@ -5,16 +5,18 @@
     @delete="onDelete"
     @edit="onEdit"
   />
+  <TaskDialog ref="taskDialogRef" :ctx="ctx" />
 </template>
 <script setup lang="tsx">
-import { Bottom, Delete, Top } from "@element-plus/icons-vue";
-import { ElButton, ElSwitch, type Column } from "element-plus";
-import { type PropType } from "vue";
+import { Bottom, Delete, Operation, Top } from "@element-plus/icons-vue";
+import { ElButton, ElMessage, ElSwitch, type Column } from "element-plus";
+import { ref, type PropType } from "vue";
 
 import ListEditPane from "@/components/panes/ListEditPane.vue";
-import TaskTestPopover from "@/components/popover/TaskTestPopover.vue";
-import TaskSelect from "@/components/select/TaskSelect.vue";
+import TaskDialog from "@/dialogs/TaskDialog.vue";
 import { initRecord, TaskManager, type ITaskConfig } from "@/models/Task";
+import { add } from "@/protocols/task/add";
+import { del } from "@/protocols/task/del";
 import { getSingleton } from "@/utils/singleton";
 
 interface ITaskConfigRow extends ITaskConfig {
@@ -26,7 +28,13 @@ const props = defineProps({
     type: Object as PropType<Record<string, any>>,
     default: () => ({}),
   },
+  pipelineId: {
+    type: String,
+    default: "",
+  },
 });
+
+const taskDialogRef = ref();
 
 const model = defineModel({
   type: Array as PropType<ITaskConfigRow[]>,
@@ -55,12 +63,7 @@ const columns: Column<any>[] = [
     title: "Code",
     dataKey: "code",
     width: 120,
-    cellRenderer: ({ rowData }) => (
-      <TaskSelect
-        v-model={rowData.code}
-        onUpdate:modelValue={(v) => initParams(v, rowData)}
-      />
-    ),
+    cellRenderer: ({ rowData }) => rowData.code,
   },
   {
     key: "desc",
@@ -81,10 +84,12 @@ const columns: Column<any>[] = [
     title: "Operations",
     cellRenderer: ({ rowData, rowIndex }) => (
       <>
-        <TaskTestPopover
-          code={rowData.code}
-          v-model={rowData.params}
-          ctx={props.ctx}
+        <ElButton
+          icon={Operation}
+          link
+          onClick={(e) => {
+            onEdit(rowData);
+          }}
         />
         <ElButton
           icon={Top}
@@ -134,18 +139,23 @@ function getTaskDescription(code: string) {
 
 async function onDelete(rows: ITaskConfigRow[]) {
   const ids = rows.map((i) => i.id);
-  model.value = model.value.filter((i) => !ids.includes(i.id));
+  try {
+    model.value = (await del(ids)).map((i) => ({ ...i, checked: false }));
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
 }
 
-async function onEdit(row: ITaskConfigRow) {
-  if (!row) {
-    model.value.push({
-      id: new Date().getTime().toString(),
-      checked: false,
-      code: "",
-      params: [],
-    });
-    return;
+async function onEdit(row: ITaskConfig) {
+  try {
+    let tc = row;
+    if (!tc) {
+      tc = await add(props.pipelineId);
+      model.value.push({ ...tc, checked: false });
+    }
+    taskDialogRef.value.show(tc);
+  } catch (err) {
+    ElMessage.error((err as Error).message);
   }
 }
 </script>

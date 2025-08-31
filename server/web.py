@@ -372,19 +372,28 @@ def _task_update(new_task:Dict[str, Any], task:Dict[str, Any]):
 def task_add():
     # 读取入参
     req = request.get_json()
-    task = req.get('task')
-    pl_id = task.get('pl_id')
+    pl_id = req.get('pl_id')
     if not pl_id:
         return response_error('Missing required params: plIid')
 
+    pl = find(app.data.get('pl'), lambda p:p.get('id') == pl_id)
+    if not pl:
+        return response_error('Plugin not found')
     try:
         tasks_list = app.data.get('tasks')
-        new_task = {}
-        _task_update(new_task, task)
+        new_task = {
+            "id": f"T{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}",
+            "pl_id": pl_id,
+            "code": "",
+            "on": True,
+            "params": {},
+        }
         tasks_list.append(new_task)
+
+        pl['tasks'].append(new_task.get('id'))
     except Exception as e:
         return response_error(str(e))
-    return response_success(task_list)
+    return response_success(new_task)
 
 @app.route('/task/update', methods=['POST'])
 def task_update():
@@ -418,8 +427,7 @@ def _task_del(task_list:List[Dict[str, Any]], ids:List[str]):
 @app.route('/task/del', methods=['POST'])
 def task_del():
     # 读取入参
-    req = request.get_json()
-    ids = req.get('ids')
+    ids = request.get_json()
     if not ids:
         return response_error('Missing required params: ids')
 

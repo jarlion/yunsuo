@@ -83,7 +83,7 @@ async function onDelete(rows: T[]) {
   }
 
   try {
-    ElMessageBox.confirm("确定删除选中项吗？", "删除确认", {
+    await ElMessageBox.confirm("确定删除选中项吗？", "删除确认", {
       confirmButtonText: "确定",
       cancelButtonText: "取消",
       type: "warning",
@@ -92,7 +92,6 @@ async function onDelete(rows: T[]) {
     return;
   }
   try {
-    const emit = defineEmits(["edit", "delete"]);
     emit("delete", rows);
   } catch {
     return;

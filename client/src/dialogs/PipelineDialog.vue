@@ -18,6 +18,7 @@
     </el-form>
     <TaskConfigListEditPane
       v-model="model.tasks"
+      :pipelineId="model.id"
       :ctx="model.ctx"
       :width="500"
       :height="300"

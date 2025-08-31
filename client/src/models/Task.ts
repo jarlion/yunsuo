@@ -6,6 +6,7 @@ export interface IDefValue {
   required: boolean;
   desc: string;
   default?: string;
+  placeholder?: string;
 }
 
 export interface ITask {
@@ -21,7 +22,10 @@ export interface ITask {
 
 export interface ITaskConfig {
   id: string;
+  parentId?: string;
+  pipelineId: string;
   code: string;
+  on: boolean;
   params: Record<string, any>;
 }
 
@@ -54,6 +58,9 @@ export class TaskManager {
 }
 
 export function getComponent(task: ITask, prop: string) {
+  if (!task?.code) {
+    return "";
+  }
   const type = task.params?.find((p) => p.name === prop)?.type;
   if (!type) {
     return "TextInput";
@@ -69,8 +76,8 @@ export function getComponent(task: ITask, prop: string) {
   }
 }
 
-export function getTaskParamDef(task:ITask, prop:string) {
-  return task.params.find((p) => p.name === prop);
+export function getTaskParamDef(task: ITask, prop: string) {
+  return task?.params?.find((p) => p.name === prop);
 }
 
 export function initRecord(defs: IDefValue[]): Record<string, any> {
