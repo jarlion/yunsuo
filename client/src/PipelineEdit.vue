@@ -119,7 +119,23 @@ async function onExec(row: IPipeline) {
   }
 }
 
-function onEdit(row?: IPipeline) {
+async function onAdd() {
+  try {
+    const pipeline = await add();
+    model.push({
+      ...pipeline,
+      checked: false,
+    });
+    return pipeline;
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
+}
+
+async function onEdit(row?: IPipeline) {
+  if (!row) {
+    row = await onAdd();
+  }
   pipelineDlgRef.value?.show(row);
 }
 
