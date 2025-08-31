@@ -31,10 +31,17 @@ content-type: application/json
     "code": "find"
 }
 
-### 运行任务
+### 运行流水线
 POST http://localhost:5000/pl/exec HTTP/1.1
 content-type: application/json
 
 {
     "id": "PL002"
+}
+
+### 运行任务
+POST http://localhost:5000/all/save HTTP/1.1
+content-type: application/json
+
+{
 }

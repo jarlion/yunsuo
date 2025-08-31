@@ -50,6 +50,7 @@ def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool
             task_ids = pl.get('tasks', [])
             tasks = []
             for task_id in task_ids:
+                print('task_id',task_id)
                 task = find(task_list, lambda t: t.get('id') == task_id)
                 if task:
                     tasks.append(task)
@@ -124,7 +125,7 @@ def pl_update():
         pl['name'] = name
         pl['desc'] = desc
         pl['stars'] = stars
-        pl['tasks'] = tasks
+        pl['tasks'] = [t.get('id') for t in tasks]
         # 更新时间
         pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -174,7 +175,7 @@ def pl_exec():
         # 读取json文件
         with open('data/pl.json', 'r', encoding='utf-8') as f:
             pl_ls = json.load(f)
-            pl = find(pl_ls, lambda x: x.get('id') == id)
+            pl = find(pl_ls, lambda p: p.get('id') == id)
             if not pl:
                 return response_error('id not found')
             ctx = pl.get('ctx',{})
@@ -427,7 +428,7 @@ def task_del():
         pl_ls = app.data.get('pl')
         for pl in pl_ls:
             if pl.get('id') in pl_ids:
-                pl['tasks'] = [item for item in pl['tasks'] if item.get('id') not in ids]
+                pl['tasks'] = [task_id for task_id in pl['tasks'] if task_id not in ids]
     except Exception as e:
         return response_error(str(e))
     return response_success(tasks_list, msg="删除成功")
