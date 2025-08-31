@@ -1,68 +1,37 @@
 <template>
   <div class="pipeline-editor">
-    <div class="pipelist-table-title">
-      <el-button-group class="ml-4">
-        <el-button :icon="RefreshRight" @click="onRefresh()" />
-        <el-button :icon="Delete" type="danger" @click="onDeleteSelected()" />
-        <el-button :icon="Plus" type="primary" @click="onEdit()" />
-      </el-button-group>
-    </div>
-    <el-row :gutter="10">
-      <el-col :span="24">
-        <el-table ref="pipelineTblRef" :data="model" style="width: 100%">
-          <el-table-column type="selection" width="55" />
-          <el-table-column type="index" width="50" />
-          <el-table-column prop="id" label="ID" width="200" />
-          <el-table-column prop="name" label="Name" width="180" />
-          <el-table-column
-            prop="desc"
-            label="Description"
-            show-overflow-tooltip
-          />
-          <el-table-column label="Stars" width="150">
-            <template #default="{ row }">
-              <el-rate v-model="row.stars" :colors="colors" />
-            </template>
-          </el-table-column>
-          <el-table-column label="Actions" width="150">
-            <template #default="{ row }">
-              <el-button
-                :icon="CaretRight"
-                type="primary"
-                link
-                @click="onExec(row)"
-              />
-              <el-button :icon="Edit" link @click="onEdit(row)" />
-              <el-button :icon="CopyDocument" link @click="onCopy(row)" />
-              <el-button
-                :icon="Delete"
-                type="danger"
-                link
-                @click="onDelete([row])"
-              />
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-col>
-    </el-row>
+    <ListEditPane
+      v-model="model"
+      :columns="columns"
+      :width="1000"
+      :height="500"
+      @edit="onEdit"
+      @delete="onDelete"
+      @refresh="onRefresh"
+    />
     <PipelineDialog ref="pipelineDlgRef" @ok="onOk" />
   </div>
 </template>
-<script setup lang="ts">
-import { CaretRight, Delete, Edit, Plus, RefreshRight, CopyDocument } from "@element-plus/icons-vue";
+<script setup lang="tsx">
+import {
+  CaretRight,
+  CopyDocument,
+  Delete,
+  Edit,
+  Plus,
+  RefreshRight,
+} from "@element-plus/icons-vue";
 import {
   ElButton,
-  ElCol,
   ElMessage,
   ElMessageBox,
-  ElRow,
-  ElTable,
-  ElTableColumn,
-  type TableInstance,
+  type Column,
+  ElTooltip,
 } from "element-plus";
-import { ref, shallowRef, type ShallowRef } from "vue";
+import { ref, reactive } from "vue";
 
 import PipelineDialog from "@/dialogs/PipelineDialog.vue";
+import ListEditPane from "@/components/panes/ListEditPane.vue";
 import { clone, type IPipeline } from "@/models/Pipeline";
 import { add } from "@/protocols/pl/add";
 import { del } from "@/protocols/pl/del";
@@ -70,13 +39,73 @@ import { list } from "@/protocols/pl/list";
 import { update } from "@/protocols/pl/update";
 import { exec } from "./protocols/pl/exec";
 
-const model: ShallowRef<IPipeline[]> = shallowRef([]);
+const model = reactive<(IPipeline & { checked: boolean })[]>([]);
 
 const pipelineDlgRef = ref<typeof PipelineDialog>();
 
-const pipelineTblRef = ref<TableInstance>();
-
 const colors = ref(["#99A9BF", "#F7BA2A", "#FF9900"]);
+
+// 定义表格列配置
+const columns: Column<IPipeline & { checked: boolean }>[] = [
+  {
+    key: "index",
+    dataKey: "index",
+    title: "Index",
+    width: 70,
+    cellRenderer: ({ rowIndex }) => rowIndex + 1,
+  },
+  {
+    key: "id",
+    dataKey: "id",
+    title: "ID",
+    width: 200,
+    cellRenderer: ({ cellData }) => cellData,
+  },
+  {
+    key: "name",
+    dataKey: "name",
+    title: "Name",
+    width: 180,
+  },
+  {
+    key: "desc",
+    dataKey: "desc",
+    title: "Description",
+    width: 250,
+  },
+  {
+    key: "stars",
+    dataKey: "stars",
+    title: "Stars",
+    width: 150,
+    cellRenderer: ({ rowData }) => (
+      <el-rate v-model={rowData.stars} colors={colors.value} disabled={true} />
+    ),
+  },
+  {
+    key: "actions",
+    title: "Actions",
+    width: 200,
+    cellRenderer: ({ rowData }) => (
+      <div style="display: flex; gap: 8px;">
+        <ElButton
+          icon={CaretRight}
+          type="primary"
+          link
+          onClick={() => onExec(rowData)}
+        />
+        <ElButton icon={Edit} link onClick={() => onEdit(rowData)} />
+        <ElButton icon={CopyDocument} link onClick={() => onCopy(rowData)} />
+        <ElButton
+          icon={Delete}
+          type="danger"
+          link
+          onClick={() => onDelete([rowData])}
+        />
+      </div>
+    ),
+  },
+];
 
 async function onExec(row: IPipeline) {
   try {
@@ -96,20 +125,25 @@ function onEdit(row?: IPipeline) {
 
 function onCopy(row: IPipeline) {
   const newPipeline = clone(row);
-  newPipeline.id = '';
+  newPipeline.id = "";
   onEdit(newPipeline);
 }
 
 async function onRefresh() {
   try {
-    model.value = await list({});
+    const pipelines = await list({});
+    // 将获取到的流水线数据转换为包含checked属性的格式
+    model.splice(
+      0,
+      model.length,
+      ...pipelines.map((p) => ({ ...p, checked: false }))
+    );
   } catch (err) {
     ElMessage.error((err as Error).message);
   }
 }
 
-async function onDelete(rows: IPipeline[]) {
-  console.log(rows);
+async function onDelete(rows: (IPipeline & { checked: boolean })[]) {
   if (!rows?.length) {
     ElMessage.warning("请选择要删除的项");
     return;
@@ -131,7 +165,12 @@ async function onDelete(rows: IPipeline[]) {
       }
       return arr;
     }, [] as string[]);
-    model.value = await del(ids);
+    const pipelines = await del(ids);
+    model.splice(
+      0,
+      model.length,
+      ...pipelines.map((p) => ({ ...p, checked: false }))
+    );
   } catch {
     return;
   }
@@ -139,27 +178,31 @@ async function onDelete(rows: IPipeline[]) {
 
 async function onOk(pipeline: IPipeline) {
   try {
+    let pipelines;
     if (!pipeline.id) {
-      model.value = await add(pipeline);
+      pipelines = await add(pipeline);
     } else {
-      model.value = await update(pipeline);
+      pipelines = await update(pipeline);
     }
+    model.splice(
+      0,
+      model.length,
+      ...pipelines.map((p) => ({ ...p, checked: false }))
+    );
   } catch (err) {
     ElMessage.error((err as Error).message);
     return;
   }
 }
 
-async function onDeleteSelected() {
-  const selection = pipelineTblRef.value?.getSelectionRows();
-  console.log(selection);
-
-  onDelete(selection as IPipeline[]);
-}
-
 async function init() {
   try {
-    model.value = await list({});
+    const pipelines = await list({});
+    model.splice(
+      0,
+      model.length,
+      ...pipelines.map((p) => ({ ...p, checked: false }))
+    );
   } catch (err) {
     ElMessage.error((err as Error).message);
   }
@@ -168,8 +211,7 @@ async function init() {
 init();
 </script>
 <style lang="css">
-.pipelist-table-title {
-  display: flex;
-  justify-content: flex-end;
+.pipeline-editor {
+  padding: 16px;
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div class="ys-align-right">
     <el-button-group>
+      <el-button :icon="RefreshRight" @click="onRefresh()" />
       <el-button :icon="Delete" type="danger" @click="onDeleteSelected()" />
       <el-button :icon="Plus" type="primary" @click="onEdit()" />
     </el-button-group>
@@ -22,7 +23,7 @@
 
 <script lang="tsx" setup generic="T extends { checked: boolean }">
 import { type SelectionCellProps } from "@/components/tables/cells/TableCell";
-import { Delete, Plus } from "@element-plus/icons-vue";
+import { Delete, Plus, RefreshRight } from "@element-plus/icons-vue";
 import {
   ElCheckbox,
   ElMessage,
@@ -39,7 +40,7 @@ import {
   type PropType,
 } from "vue";
 
-const emit = defineEmits(["edit", "delete"]);
+const emit = defineEmits(["edit", "delete", "refresh"]);
 
 const props = defineProps({
   columns: {
@@ -66,6 +67,10 @@ const model = defineModel({
 });
 
 const tblRef = ref<TableInstance>();
+
+function onRefresh() {
+  emit("refresh");
+}
 
 function onEdit(row?: T) {
   emit("edit", row);

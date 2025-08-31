@@ -1,6 +1,6 @@
 // Vue单文件组件类型声明
 declare module '*.vue' {
-  import { DefineComponent } from 'vue'
+  import type { DefineComponent } from 'vue'
   const component: DefineComponent<{}, {}, any>
   export default component
 }
@@ -11,6 +11,7 @@ export type VueComponentProps<T extends any> = T extends { props: infer P } ? P 
 // 确保路径别名能够被TypeScript正确解析
 declare module '@/*' {
   // 这里的声明是为了告诉TypeScript '@/*' 路径是有效的
-  const module: any
-  export default module
+  import type { DefineComponent } from 'vue'
+  const component: DefineComponent<{}, {}, any>
+  export default component
 }
