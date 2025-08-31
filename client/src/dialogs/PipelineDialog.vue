@@ -4,6 +4,7 @@
     v-model="visible"
     width="700"
     :before-close="onClose"
+    :close-on-click-modal="false"
   >
     <el-form :model="model" :rules="rules" ref="formRef" label-width="120px">
       <el-form-item label="Name" prop="name">
@@ -55,7 +56,9 @@ function show(pipeline?: IPipeline) {
     model.value = clone(pipeline);
     isCodeEditable.value = pipeline.code?.length === 0;
   }
-  title.value = model.value.id ? `编辑 ${model.value.id.toUpperCase()}` : "新增流水线";
+  title.value = model.value.id
+    ? `编辑 ${model.value.id.toUpperCase()}`
+    : "新增流水线";
   visible.value = true;
 }
 

@@ -29,11 +29,19 @@ export interface ITaskConfig {
   params: Record<string, any>;
 }
 
-export function clone(tc:ITaskConfig):ITaskConfig{
+export function initBy(defs: IDefValue[]): Record<string, any> {
+  const result: Record<string, any> = {};
+  defs.forEach((def) => {
+    result[def.name] = initRecordValue(def);
+  });
+  return result;
+}
+
+export function clone(tc: ITaskConfig): ITaskConfig {
   return {
     ...tc,
-    params: {...tc.params}
-  }
+    params: { ...tc.params },
+  };
 }
 
 export class TaskManager {

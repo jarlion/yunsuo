@@ -2,10 +2,13 @@
   <ListEditPane
     :columns="columns"
     v-model="model"
+    @refresh="onRefresh"
     @delete="onDelete"
     @edit="onEdit"
+    :width="$attrs.width"
+    :height="$attrs.height"
   />
-  <TaskDialog ref="taskDialogRef" :ctx="ctx" />
+  <TaskDialog ref="taskDialogRef" :ctx="ctx" @ok="onOk" />
 </template>
 <script setup lang="tsx">
 import { Bottom, Delete, Operation, Top } from "@element-plus/icons-vue";
@@ -138,6 +141,10 @@ function getTaskDescription(code: string) {
   return task?.desc || "";
 }
 
+async function onRefresh() {
+  model.value = (await list({ pl_id: props.pipelineId })).map((i) => ({ ...i, checked: false }));
+}
+
 async function onDelete(rows: ITaskConfigRow[]) {
   const ids = rows.map((i) => i.id);
   try {
@@ -161,4 +168,14 @@ async function onEdit(row: ITaskConfig) {
     ElMessage.error((err as Error).message);
   }
 }
+
+async function onOk(tc: ITaskConfig) {
+  try {
+    await onRefresh()
+    initParams(tc.code, {...tc, checked: false});
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
+}
+
 </script>

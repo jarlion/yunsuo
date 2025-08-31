@@ -8,26 +8,31 @@
   >
     <el-space fill>
       <el-alert type="info" title="任务参数" :closable="false" />
-      <el-form label-width="100px" :rules="rules" :model="model.params">
+      <el-form
+        ref="taskFormRef"
+        label-width="100px"
+        :rules="rules"
+        :model="model.params"
+      >
         <el-form-item label="ctx">
           <el-input v-model="ctx" />
         </el-form-item>
         <el-form-item label="code">
-          <TaskSelect v-model="model.code" />
+          <TaskSelect v-model="model.code" @change="onTaskCodeChange" />
         </el-form-item>
         <el-form-item label="on">
           <el-switch v-model="model.on" />
         </el-form-item>
         <el-form-item
-          v-for="prop in taskDef?.params || []"
+          v-for="prop in task?.params || []"
           :key="prop.name"
           :label="prop.name"
           :prop="prop.name"
         >
           <component
-            :is="getComponent(taskDef, prop.name)"
+            :is="getComponent(task, prop.name)"
             v-model="model.params[prop.name]"
-            :placeholder="getTaskParamDef(taskDef, prop.name)?.placeholder"
+            :placeholder="getTaskParamDef(task, prop.name)?.placeholder"
           />
         </el-form-item>
       </el-form>
@@ -42,42 +47,56 @@
           {{ `调试` }}
         </el-button>
       </el-button-group>
-      <el-button :icon="CloseBold" @click="onClose" :loading="loading"></el-button>
-      <el-button :icon="Select" type="primary" @click="onOk" :loading="loading">
-      </el-button>
+      <el-button
+        :icon="CloseBold"
+        @click="onClose"
+        :loading="loading"
+      />
+      <el-button :icon="Select" type="primary" @click="onOk" :loading="loading" />
     </template>
   </el-dialog>
 </template>
 <script lang="ts" setup>
 import {
+  CloseBold,
   DArrowRight,
   Download,
   Select,
   Upload,
-  CloseBold,
 } from "@element-plus/icons-vue";
-import { ElInput, ElMessage } from "element-plus";
-import { computed, ref, unref, watch, type ComputedRef, type Ref } from "vue";
-
+import { ElForm, ElInput, ElMessage } from "element-plus";
 import {
-  type ITask,
-  type ITaskConfig,
-  type TaskManager,
+  computed,
+  ref,
+  shallowRef,
+  unref,
+  watch,
+  type Ref,
+  type ShallowRef,
+} from "vue";
+
+import TaskSelect from "@/components/select/TaskSelect.vue";
+import {
   clone,
   getComponent,
   getTaskParamDef,
+  initBy,
+  type ITask,
+  type ITaskConfig,
+  type TaskManager,
 } from "@/models/Task";
-import { test } from "@/protocols/task/test";
-import { getSingleton } from "@/utils/singleton";
-import TaskSelect from "@/components/select/TaskSelect.vue";
-import { update } from "@/protocols/task/update";
 import { toTaskParams } from "@/protocols/base/ITaskParams";
+import { test } from "@/protocols/task/test";
+import { update } from "@/protocols/task/update";
+import { getSingleton } from "@/utils/singleton";
 
 const emit = defineEmits(["ok"]);
 
 const title = ref("");
 
 const visible = ref(false);
+
+const taskFormRef = ref<typeof ElForm>();
 
 const props = defineProps({
   ctx: {
@@ -98,19 +117,24 @@ const model: Ref<ITaskConfig> = ref({
 
 const ctx = ref(JSON.stringify(props.ctx));
 
-const taskDef: ComputedRef<ITask> = computed(
-  () =>
-    getSingleton<TaskManager>("taskManager")?.getTask(model.value.code) || {
-      params: [],
-      id: "",
-      code: "",
-      name: "",
-    }
-);
+const task: ShallowRef<ITask> = shallowRef({
+  params: [],
+  id: "",
+  code: "",
+  name: "",
+});
+
+function onTaskCodeChange(code: string) {
+  const targetTask = getSingleton<TaskManager>("taskManager")?.getTask(code);
+  if (targetTask) {
+    task.value = targetTask;
+    model.value.params = initBy(task.value.params);
+  }
+}
 
 const rules = computed(() => {
   const kvs =
-    taskDef.value?.params.map((p) => [
+    task.value?.params.map((p) => [
       p.name,
       { required: p.required, trigger: "blur" },
     ]) || [];
@@ -170,7 +194,10 @@ function onSaveTemp() {
   try {
     localStorage.setItem(
       model.value.id,
-      JSON.stringify({ params: modelToObject(model.value.params), ctx: ctx.value })
+      JSON.stringify({
+        params: model.value.params,
+        ctx: ctx.value,
+      })
     );
     ElMessage.success("暂存成功");
   } catch (err) {
@@ -183,7 +210,7 @@ function onLoadTemp() {
     const res = localStorage.getItem(model.value.id);
     if (res) {
       const data = JSON.parse(res);
-      model.value.params = initModel(data.params);
+      model.value.params = data.params;
       ctx.value = data.ctx;
     }
     ElMessage.success("加载暂存成功");
@@ -196,6 +223,12 @@ function onClose() {
   visible.value = false;
 }
 async function onOk() {
+  try {
+    await unref(taskFormRef)?.validate();
+  } catch (err) {
+    // 校验失败
+    return;
+  }
   try {
     loading.value = true;
     const params = toTaskParams(unref(model));
