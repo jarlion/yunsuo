@@ -50,7 +50,7 @@ import { ElInput, ElMessage } from "element-plus";
 import { computed, ref, watch } from "vue";
 
 import { type TaskManager, getComponent, getTaskParamDef } from "@/models/Task";
-import { test } from "@/protocols/tasks/test";
+import { test } from "@/protocols/task/test";
 import { getSingleton } from "@/utils/singleton";
 
 const emit = defineEmits(["update:modelValue"]);

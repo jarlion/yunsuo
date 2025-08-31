@@ -7,7 +7,7 @@ import { ElButton, ElMessage, ElTag, ElTooltip } from "element-plus";
 import { shallowRef, type ShallowRef } from "vue";
 
 import type { IDefValue, ITask } from "@/models/Task";
-import { list } from "@/protocols/tasks/list";
+import { list } from "@/protocols/task/list";
 import type { Column } from "element-plus";
 import { TableV2FixedDir } from "element-plus";
 

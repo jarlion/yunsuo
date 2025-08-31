@@ -1,4 +1,4 @@
-import { list } from "@/protocols/tasks/list";
+import { list } from "@/protocols/task/list";
 
 export interface IDefValue {
   name: string;
