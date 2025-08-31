@@ -16,8 +16,7 @@ export interface ITask {
   name: string;
   mode?: string;
   params: IDefValue[];
-  ctx?: IDefValue[];
-  result?: IDefValue[];
+  result?: IDefValue;
 }
 
 export interface ITaskConfig {
@@ -35,6 +34,16 @@ export function initBy(defs: IDefValue[]): Record<string, any> {
     result[def.name] = initRecordValue(def);
   });
   return result;
+}
+
+export function createDefaultTask():ITask{
+  return {
+    id: "",
+    code: "",
+    desc: "",
+    name: "",
+    params: [],
+  }
 }
 
 export function clone(tc: ITaskConfig): ITaskConfig {

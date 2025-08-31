@@ -15,7 +15,7 @@
         :model="model.params"
       >
         <el-form-item label="ctx">
-          <el-input v-model="ctx" />
+          <ObjectInput v-model="ctx" />
         </el-form-item>
         <el-form-item label="code">
           <TaskSelect v-model="model.code" @change="onTaskCodeChange" />
@@ -47,12 +47,13 @@
           {{ `调试` }}
         </el-button>
       </el-button-group>
+      <el-button :icon="CloseBold" @click="onClose" :loading="loading" />
       <el-button
-        :icon="CloseBold"
-        @click="onClose"
+        :icon="Select"
+        type="primary"
+        @click="onOk"
         :loading="loading"
       />
-      <el-button :icon="Select" type="primary" @click="onOk" :loading="loading" />
     </template>
   </el-dialog>
 </template>
@@ -78,6 +79,7 @@ import {
 import TaskSelect from "@/components/select/TaskSelect.vue";
 import {
   clone,
+  createDefaultTask,
   getComponent,
   getTaskParamDef,
   initBy,
@@ -89,6 +91,7 @@ import { toTaskParams } from "@/protocols/base/ITaskParams";
 import { test } from "@/protocols/task/test";
 import { update } from "@/protocols/task/update";
 import { getSingleton } from "@/utils/singleton";
+import ObjectInput from "@/components/input/ObjectInput.vue";
 
 const emit = defineEmits(["ok"]);
 
@@ -115,14 +118,9 @@ const model: Ref<ITaskConfig> = ref({
   params: {},
 });
 
-const ctx = ref(JSON.stringify(props.ctx));
+const ctx = ref(props.ctx);
 
-const task: ShallowRef<ITask> = shallowRef({
-  params: [],
-  id: "",
-  code: "",
-  name: "",
-});
+const task: ShallowRef<ITask> = shallowRef(createDefaultTask());
 
 function onTaskCodeChange(code: string) {
   const targetTask = getSingleton<TaskManager>("taskManager")?.getTask(code);
@@ -173,7 +171,7 @@ function modelToObject(model: Record<string, string>): Record<string, any> {
 watch(
   () => props.ctx,
   (val) => {
-    ctx.value = JSON.stringify(val);
+    ctx.value = val;
   }
 );
 
@@ -181,8 +179,8 @@ async function onTest() {
   try {
     const res = await test({
       code: model.value.code,
-      params: modelToObject(model.value.params),
-      ctx: JSON.parse(ctx.value),
+      params: model.value.params,
+      ctx: ctx.value,
     });
     result.value = JSON.stringify(res);
   } catch (err) {
@@ -244,6 +242,9 @@ async function onOk() {
 
 function show(tc: ITaskConfig) {
   title.value = `编辑任务 ${tc.id}` || `新建任务`;
+  task.value =
+    getSingleton<TaskManager>("taskManager")?.getTask(tc.code) ||
+    createDefaultTask();
   model.value = clone(tc);
   visible.value = true;
 }

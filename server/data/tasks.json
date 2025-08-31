@@ -18,5 +18,50 @@
       "rule": "ext"
     },
     "on": true
+  },
+  {
+    "id": "T202508311845081295",
+    "pl_id": "",
+    "code": "loop",
+    "on": false,
+    "params": {
+      "after": "66",
+      "before": "55",
+      "condition": "5555",
+      "source": "44",
+      "script": "55"
+    },
+    "childeren": [],
+    "create_time": "2025-09-01 00:34:28",
+    "update_time": "2025-09-01 00:34:28"
+  },
+  {
+    "id": "T202508312308517194",
+    "pl_id": "",
+    "code": "find",
+    "on": true,
+    "params": {
+      "patterns": [
+        "B\\d+",
+        "\\.(AZ|DN)$"
+      ]
+    },
+    "desc": "",
+    "childeren": [],
+    "create_time": "2025-09-01 01:02:36",
+    "update_time": "2025-09-01 01:02:36"
+  },
+  {
+    "id": "T202509010008018632",
+    "pl_id": "",
+    "code": "exec",
+    "on": false,
+    "params": {
+      "source": "55",
+      "script": "66"
+    },
+    "childeren": [],
+    "create_time": "2025-09-01 00:33:18",
+    "update_time": "2025-09-01 00:33:18"
   }
 ]

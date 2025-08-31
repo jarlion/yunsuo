@@ -25,6 +25,6 @@ watch(
 );
 
 function onChange(val: string) {
-  emit("update:modelValue", val);
+  emit("update:modelValue", JSON.parse(val));
 }
 </script>
