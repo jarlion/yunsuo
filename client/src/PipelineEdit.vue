@@ -39,7 +39,7 @@ import { list } from "@/protocols/pl/list";
 import { update } from "@/protocols/pl/update";
 import { exec } from "./protocols/pl/exec";
 
-const model = reactive<(IPipeline & { checked: boolean })[]>([]);
+const model = ref<(IPipeline & { checked: boolean })[]>([]);
 
 const pipelineDlgRef = ref<typeof PipelineDialog>();
 
@@ -79,7 +79,11 @@ const columns: Column<IPipeline & { checked: boolean }>[] = [
     title: "Stars",
     width: 150,
     cellRenderer: ({ rowData }) => (
-      <el-rate v-model={rowData.stars} colors={colors.value} disabled={true} />
+      <el-rate
+        v-model={rowData.stars}
+        colors={colors.value}
+        onChange={(s: number) => onChangeStars(rowData, s)}
+      />
     ),
   },
   {
@@ -122,7 +126,7 @@ async function onExec(row: IPipeline) {
 async function onAdd() {
   try {
     const pipeline = await add();
-    model.push({
+    model.value.push({
       ...pipeline,
       checked: false,
     });
@@ -145,15 +149,25 @@ function onCopy(row: IPipeline) {
   onEdit(newPipeline);
 }
 
+async function onChangeStars(row: IPipeline, stars: number) {
+  row.stars = stars;
+  try {
+    model.value = (
+      await update({
+        id: row.id,
+        stars,
+      })
+    ).map((p) => ({ ...p, checked: false }));
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
+}
+
 async function onRefresh() {
   try {
     const pipelines = await list({});
     // 将获取到的流水线数据转换为包含checked属性的格式
-    model.splice(
-      0,
-      model.length,
-      ...pipelines.map((p) => ({ ...p, checked: false }))
-    );
+    model.value = pipelines.map((p) => ({ ...p, checked: false }));
   } catch (err) {
     ElMessage.error((err as Error).message);
   }
@@ -182,11 +196,7 @@ async function onDelete(rows: (IPipeline & { checked: boolean })[]) {
       return arr;
     }, [] as string[]);
     const pipelines = await del(ids);
-    model.splice(
-      0,
-      model.length,
-      ...pipelines.map((p) => ({ ...p, checked: false }))
-    );
+    model.value = pipelines.map((p) => ({ ...p, checked: false }));
   } catch {
     return;
   }
@@ -194,17 +204,8 @@ async function onDelete(rows: (IPipeline & { checked: boolean })[]) {
 
 async function onOk(pipeline: IPipeline) {
   try {
-    let pipelines;
-    if (!pipeline.id) {
-      pipelines = await add(pipeline);
-    } else {
-      pipelines = await update(pipeline);
-    }
-    model.splice(
-      0,
-      model.length,
-      ...pipelines.map((p) => ({ ...p, checked: false }))
-    );
+    let pipelines = await update(pipeline);
+    model.value = pipelines.map((p) => ({ ...p, checked: false }));
   } catch (err) {
     ElMessage.error((err as Error).message);
     return;
@@ -214,11 +215,7 @@ async function onOk(pipeline: IPipeline) {
 async function init() {
   try {
     const pipelines = await list({});
-    model.splice(
-      0,
-      model.length,
-      ...pipelines.map((p) => ({ ...p, checked: false }))
-    );
+    model.value = pipelines.map((p) => ({ ...p, checked: false }));
   } catch (err) {
     ElMessage.error((err as Error).message);
   }

@@ -118,13 +118,18 @@ def pl_update():
         pl = find(pl_ls, lambda x: x.get('id') == id)
         if not pl:
             return response_error('id not found')
-        
-        pl['ctx'] = ctx
-        pl['code'] = code
-        pl['name'] = name
-        pl['desc'] = desc
-        pl['stars'] = stars
-        pl['tasks'] = [t.get('id') for t in tasks]
+        if code:
+            pl['code'] = code
+        if name:
+            pl['name'] = name
+        if ctx:
+            pl['ctx'] = ctx
+        if desc:
+            pl['desc'] = desc
+        if stars:
+            pl['stars'] = stars
+        if tasks:
+            pl['tasks'] = [t.get('id') for t in tasks]
         # 更新时间
         pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
