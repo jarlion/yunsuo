@@ -39,9 +39,8 @@ def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool
     if on is not None:
         pl_ls = [pl for pl in pl_ls if pl.get('on') == on]
     # 按照 stars 降序排列
-    pl_ls.sort(key=lambda x: x.get('stars', 0), reverse=True)
-    # 按照 update_time 降序排列
-    pl_ls.sort(key=lambda x: x.get('update_time', '1970-01-01 00:00:00'), reverse=True)
+    # 按照 update_time 降序排列 # 负号实现降序
+    pl_ls = sorted(pl_ls, key=lambda x: (-x['stars'], -datetime.strptime(x['update_time'], '%Y-%m-%d %H:%M:%S').timestamp()))
     # 根据 tasks 查询 任务
     task_list = app.data.get('tasks')
     result = []
