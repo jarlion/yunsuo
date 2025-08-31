@@ -240,20 +240,30 @@ def init_params(params:Dict[str, str], ctx: Dict[str, Any]):
         res[key] = value
     return res
 
-### 任务列表
+### 任务定义列表
 @app.route('/task/list', methods=['POST'])
 def task_list():
     # 读取入参
     req = request.get_json()
     code = req.get('code')
+    task_ids = []
     result = []
     try:
-        for dir in os.listdir('tasks'):
-            if os.path.isdir(os.path.join('tasks', dir)):
+        # 如果指定任务编码，返回指定的任务定义，否则返回全部任务定义
+        if code:
+            if os.path.isdir(os.path.join('tasks', code)):
                 # 读取json文件
-                with open(os.path.join('tasks', dir, 'def.json'), 'r', encoding='utf-8') as f:
+                with open(os.path.join('tasks', code, 'def.json'), 'r', encoding='utf-8') as f:
                     task = json.load(f)
                     result.append(task)
+                    return response_success(result)
+        else:
+            for dir in os.listdir('tasks'):
+                if os.path.isdir(os.path.join('tasks', dir)):
+                    # 读取json文件
+                    with open(os.path.join('tasks', dir, 'def.json'), 'r', encoding='utf-8') as f:
+                        task = json.load(f)
+                        result.append(task)
 
     except Exception as e:
         return response_error(str(e))
@@ -441,9 +451,11 @@ def task_del():
         for pl in pl_ls:
             if pl.get('id') in pl_ids:
                 pl['tasks'] = [task_id for task_id in pl['tasks'] if task_id not in ids]
+    
     except Exception as e:
         return response_error(str(e))
-    return response_success(tasks_list, msg="删除成功")
+    # 未定返回结果
+    return response_success([], msg="删除成功")
 
 
 def response_success(data, msg='success', page:dict={}):
