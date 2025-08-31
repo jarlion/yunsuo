@@ -18,6 +18,7 @@ import { initRecord, TaskManager, type ITaskConfig } from "@/models/Task";
 import { add } from "@/protocols/task/add";
 import { del } from "@/protocols/task/del";
 import { getSingleton } from "@/utils/singleton";
+import { list } from "@/protocols/pl/task/list";
 
 interface ITaskConfigRow extends ITaskConfig {
   checked: boolean;
@@ -140,7 +141,9 @@ function getTaskDescription(code: string) {
 async function onDelete(rows: ITaskConfigRow[]) {
   const ids = rows.map((i) => i.id);
   try {
-    model.value = (await del(ids)).map((i) => ({ ...i, checked: false }));
+    await del(ids)
+    model.value = (await list({ pl_id: props.pipelineId })).map((i) => ({ ...i, checked: false }));
+    // model.value = (await del(ids)).map((i) => ({ ...i, checked: false }));
   } catch (err) {
     ElMessage.error((err as Error).message);
   }

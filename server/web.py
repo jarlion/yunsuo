@@ -16,6 +16,25 @@ CORS(app)
 def hello():
     return 'Hello, YunSuo!'
 
+def _init_pl_task(pl:Dict[str,Any]):
+    """
+    初始化流水线任务
+    :param pl: 流水线
+    :return: None
+    """
+    tasks = pl.get('tasks')
+    if not tasks:
+        return pl
+    task_ids = pl.get('tasks', [])
+    task_list = app.data.get('tasks')
+    tasks = []
+    for task_id in task_ids:
+        task = find(task_list, lambda t: t.get('id') == task_id)
+        if task:
+            tasks.append(task)
+    pl['tasks'] = tasks
+    return pl
+
 def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool|None=None):
     """
     获取流水线列表
@@ -46,15 +65,8 @@ def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool
     result = []
     if task_list:
         for pl in pl_ls:
-            task_ids = pl.get('tasks', [])
-            tasks = []
-            for task_id in task_ids:
-                print('task_id',task_id)
-                task = find(task_list, lambda t: t.get('id') == task_id)
-                if task:
-                    tasks.append(task)
             new_pl = pl.copy()
-            new_pl['tasks'] = tasks
+            _init_pl_task(new_pl)
             result.append(new_pl)
     return result
 
@@ -152,6 +164,24 @@ def pl_delete():
     _task_del(app.data.get('tasks'), ids)
     
     return response_success(_pl_list(), msg="删除成功")
+
+@app.route('/pl/task/list', methods=['POST'])
+def pl_task():
+    # 读取入参
+    req = request.get_json()
+    pl_id = req.get('pl_id')
+    if not pl_id:
+        return response_error('id not be empty')
+    try:
+        pl_ls = app.data.get("pl")
+        pl = find(pl_ls, lambda p: p.get('id') == pl_id)
+        if not pl:
+            return response_error('pl not found')
+        result = _init_pl_task(pl.copy()).get("tasks")
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(result)
+
 
 def find(ls:List[Any] ,match:Callable[[Any],bool])->(Any|None):
     """
@@ -370,7 +400,6 @@ def _task_update(new_task:Dict[str, Any], task:Dict[str, Any]):
     new_task['pl_id'] = task.get('pl_id', '')
     new_task['on'] = task.get('on', True)
     new_task['code'] = task.get('code', '')
-    new_task['desc'] = task.get('desc', '')
     new_task['params'] = task.get('params', {})
     new_task['childeren'] = task.get('childeren', [])
     new_task['create_time'] = task.get('create_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -408,21 +437,17 @@ def task_add():
 @app.route('/task/update', methods=['POST'])
 def task_update():
     # 读取入参
-    req = request.get_json()
-    task = req.get('task')
-    pl_id = task.get('pl_id')
-    if not pl_id:
-        return response_error('Missing required params: plIid')
+    task = request.get_json()
 
     try:
         tasks_list = app.data.get('tasks')
-        new_task = find(tasks_list, lambda t:t == task.get('id'))
-        if not new_task:
+        target_task = find(tasks_list, lambda t:t.get('id') == task.get('id'))
+        if not target_task:
             return response_error('Task not found')
-        _task_update(new_task, task)
+        _task_update(target_task, task)
     except Exception as e:
         return response_error(str(e))
-    return response_success(task_list)
+    return response_success(target_task, "更新成功")
 
 def _task_del(task_list:List[Dict[str, Any]], ids:List[str]):
     """

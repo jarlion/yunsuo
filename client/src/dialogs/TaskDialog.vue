@@ -4,10 +4,11 @@
     v-model="visible"
     width="700"
     :before-close="onClose"
+    :close-on-click-modal="false"
   >
     <el-space fill>
       <el-alert type="info" title="任务参数" :closable="false" />
-      <el-form label-width="100px" :rules="rules" :model="modelJson">
+      <el-form label-width="100px" :rules="rules" :model="model.params">
         <el-form-item label="ctx">
           <el-input v-model="ctx" />
         </el-form-item>
@@ -18,16 +19,15 @@
           <el-switch v-model="model.on" />
         </el-form-item>
         <el-form-item
-          v-for="prop in task?.params || []"
+          v-for="prop in taskDef?.params || []"
           :key="prop.name"
           :label="prop.name"
           :prop="prop.name"
         >
-          <!-- <el-input v-model="modelJson[prop]" /> -->
           <component
-            :is="getComponent(task, prop.name)"
+            :is="getComponent(taskDef, prop.name)"
             v-model="model.params[prop.name]"
-            :placeholder="getTaskParamDef(task, prop.name)?.placeholder"
+            :placeholder="getTaskParamDef(taskDef, prop.name)?.placeholder"
           />
         </el-form-item>
       </el-form>
@@ -42,9 +42,8 @@
           {{ `调试` }}
         </el-button>
       </el-button-group>
-      <el-button :icon="CloseBold" @click="onClose">Cancel</el-button>
-      <el-button :icon="Select" type="primary" @click="onOk">
-        Submit
+      <el-button :icon="CloseBold" @click="onClose" :loading="loading"></el-button>
+      <el-button :icon="Select" type="primary" @click="onOk" :loading="loading">
       </el-button>
     </template>
   </el-dialog>
@@ -58,20 +57,23 @@ import {
   CloseBold,
 } from "@element-plus/icons-vue";
 import { ElInput, ElMessage } from "element-plus";
-import { computed, ref, watch, type ComputedRef, type Ref } from "vue";
+import { computed, ref, unref, watch, type ComputedRef, type Ref } from "vue";
 
 import {
   type ITask,
   type ITaskConfig,
   type TaskManager,
+  clone,
   getComponent,
   getTaskParamDef,
 } from "@/models/Task";
 import { test } from "@/protocols/task/test";
 import { getSingleton } from "@/utils/singleton";
 import TaskSelect from "@/components/select/TaskSelect.vue";
+import { update } from "@/protocols/task/update";
+import { toTaskParams } from "@/protocols/base/ITaskParams";
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["ok"]);
 
 const title = ref("");
 
@@ -84,6 +86,8 @@ const props = defineProps({
   },
 });
 
+const loading = ref(false);
+
 const model: Ref<ITaskConfig> = ref({
   id: "",
   pipelineId: "",
@@ -92,10 +96,9 @@ const model: Ref<ITaskConfig> = ref({
   params: {},
 });
 
-const modelJson = ref({});
 const ctx = ref(JSON.stringify(props.ctx));
 
-const task: ComputedRef<ITask> = computed(
+const taskDef: ComputedRef<ITask> = computed(
   () =>
     getSingleton<TaskManager>("taskManager")?.getTask(model.value.code) || {
       params: [],
@@ -107,7 +110,7 @@ const task: ComputedRef<ITask> = computed(
 
 const rules = computed(() => {
   const kvs =
-    task.value?.params.map((p) => [
+    taskDef.value?.params.map((p) => [
       p.name,
       { required: p.required, trigger: "blur" },
     ]) || [];
@@ -150,18 +153,11 @@ watch(
   }
 );
 
-watch(
-  () => props.modelValue,
-  (val) => {
-    modelJson.value = initModel(val);
-  }
-);
-
 async function onTest() {
   try {
     const res = await test({
-      code: props.code,
-      params: modelToObject(modelJson.value),
+      code: model.value.code,
+      params: modelToObject(model.value.params),
       ctx: JSON.parse(ctx.value),
     });
     result.value = JSON.stringify(res);
@@ -173,8 +169,8 @@ async function onTest() {
 function onSaveTemp() {
   try {
     localStorage.setItem(
-      props.code,
-      JSON.stringify({ params: modelToObject(modelJson.value), ctx: ctx.value })
+      model.value.id,
+      JSON.stringify({ params: modelToObject(model.value.params), ctx: ctx.value })
     );
     ElMessage.success("暂存成功");
   } catch (err) {
@@ -184,10 +180,10 @@ function onSaveTemp() {
 
 function onLoadTemp() {
   try {
-    const res = localStorage.getItem(props.code);
+    const res = localStorage.getItem(model.value.id);
     if (res) {
       const data = JSON.parse(res);
-      modelJson.value = initModel(data.params);
+      model.value.params = initModel(data.params);
       ctx.value = data.ctx;
     }
     ElMessage.success("加载暂存成功");
@@ -199,13 +195,23 @@ function onLoadTemp() {
 function onClose() {
   visible.value = false;
 }
-function onOk() {
-  emit("update:modelValue", modelToObject(modelJson.value));
+async function onOk() {
+  try {
+    loading.value = true;
+    const params = toTaskParams(unref(model));
+    const task = await update(params);
+    emit("ok", task);
+    onClose();
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  } finally {
+    loading.value = false;
+  }
 }
 
 function show(tc: ITaskConfig) {
   title.value = `编辑任务 ${tc.id}` || `新建任务`;
-  modelJson.value = initModel(tc);
+  model.value = clone(tc);
   visible.value = true;
 }
 

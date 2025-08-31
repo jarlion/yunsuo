@@ -29,6 +29,13 @@ export interface ITaskConfig {
   params: Record<string, any>;
 }
 
+export function clone(tc:ITaskConfig):ITaskConfig{
+  return {
+    ...tc,
+    params: {...tc.params}
+  }
+}
+
 export class TaskManager {
   private tasks: ITask[] = [];
 
