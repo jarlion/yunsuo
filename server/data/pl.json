@@ -1,74 +1,5 @@
 [
   {
-    "name": "PL001",
-    "id": "PL001",
-    "code": "PL001",
-    "desc": "解压文件",
-    "stars": 5,
-    "ctx": {
-      "root": "v:\\"
-    },
-    "tasks": [
-      {
-        "id": "T1756043393859",
-        "code": "find",
-        "params": {
-          "patterns": [
-            "B\\d+",
-            ".*"
-          ]
-        },
-        "on": true
-      },
-      {
-        "code": "rename",
-        "id": "T1756043393860",
-        "params": {
-          "new_name": "zip",
-          "path": ">result.get(\"path\",[])[0]",
-          "rule": "ext"
-        },
-        "on": true
-      }
-    ],
-    "update_time": "2025-08-27 01:12:23",
-    "create_time": "2025-08-24 10:00:00"
-  },
-  {
-    "name": "解压v",
-    "id": "PL002",
-    "code": "PL002",
-    "desc": "这是第二个流水线",
-    "stars": 4,
-    "ctx": {
-      "root": "v:\\"
-    },
-    "tasks": [
-      {
-        "id": "T1756043393861",
-        "code": "find",
-        "params": {
-          "patterns": [
-            "v\\d{14}\\\\.*\\.mp4"
-          ]
-        },
-        "on": true
-      },
-      {
-        "code": "rename",
-        "id": "1756485181427",
-        "params": {
-          "new_name": ".zip",
-          "path": ">result.path",
-          "rule": "ext"
-        },
-        "on": true
-      }
-    ],
-    "update_time": "2025-08-30 01:07:42",
-    "create_time": "2025-08-24 10:00:00"
-  },
-  {
     "id": "PL202508302047476620",
     "code": "PL002",
     "name": "解压v",
@@ -78,29 +9,10 @@
     "desc": "这是第二个流水线",
     "stars": 4,
     "tasks": [
-      {
-        "id": "T1756043393860",
-        "code": "find",
-        "params": {
-          "patterns": [
-            "v\\d{14}\\\\.*\\.mp4"
-          ]
-        },
-        "on": true
-      },
-      {
-        "checked": false,
-        "code": "rename",
-        "id": "T1756485181427",
-        "params": {
-          "new_name": ".zip",
-          "path": ">result.path",
-          "rule": "ext"
-        },
-        "on": true
-      }
+      "T1756043393861",
+      "T1756485181427"
     ],
-    "create_time": "2025-08-30 20:47:47",
-    "update_time": "2025-08-30 20:47:47"
+    "create_time": "2025-08-24 10:00:00",
+    "update_time": "2025-08-30 01:07:42"
   }
 ]

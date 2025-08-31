@@ -16,86 +16,85 @@ CORS(app)
 def hello():
     return 'Hello, YunSuo!'
 
+def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool|None=None):
+    """
+    获取流水线列表
+    :param pl_list: 流水线列表
+    :param name: 流水线名称
+    :param code: 流水线代码
+    :param desc: 流水线描述
+    :param on: 是否启用
+    :return: 流水线列表
+    """
+    pl_ls = app.data.get('pl')
+    if not pl_ls:
+        return []
+
+    if name:
+        pl_ls = [pl for pl in pl_ls if name.lower() in pl.get('name', '').lower()]
+    if code:
+        pl_ls = [pl for pl in pl_ls if code == pl.get('code')]
+    if desc:
+        pl_ls = [pl for pl in pl_ls if desc.lower() in pl.get('desc', '').lower()]
+    if on is not None:
+        pl_ls = [pl for pl in pl_ls if pl.get('on') == on]
+    # 按照 stars 降序排列
+    pl_ls.sort(key=lambda x: x.get('stars', 0), reverse=True)
+    # 按照 update_time 降序排列
+    pl_ls.sort(key=lambda x: x.get('update_time', '1970-01-01 00:00:00'), reverse=True)
+    # 根据 tasks 查询 任务
+    task_list = app.data.get('tasks')
+    result = []
+    if task_list:
+        for pl in pl_ls:
+            task_ids = pl.get('tasks', [])
+            tasks = []
+            for task_id in task_ids:
+                task = find(task_list, lambda t: t.get('id') == task_id)
+                if task:
+                    tasks.append(task)
+            new_pl = pl.copy()
+            new_pl['tasks'] = tasks
+            result.append(new_pl)
+    return result
+
 @app.route('/pl/list', methods=['POST'])
 def pl_list():
     # 读取入参
     req = request.get_json()
     name = req.get('name')
     code = req.get('code')
-    # ctx = req.get('ctx')
     desc = req.get('desc')
-    # tasks = req.get('tasks')
+    on = req.get('on')
    
     try:
-        pl_list = app.data.get('pl')
-        # 如果 code 有值 则根据 code 精确匹配
-        if code:
-            pl_list = [pl for pl in pl_list if pl.get('code') == code]
-
-        # 如果 name 有值 则根据 name 模糊匹配
-        if name:
-            pl_list = [pl for pl in pl_list if name.lower() in pl.get('name', '').lower()]
-
-        # 如果 desc 有值 则根据 desc 模糊匹配
-        if desc:
-            pl_list = [pl for pl in pl_list if desc.lower() in pl.get('desc', '').lower()]
-
-        # 按照 stars 降序排列
-        pl_list.sort(key=lambda x: x.get('stars', 0), reverse=True)
-
+        result = _pl_list(name, code, desc, on) 
     except Exception as e:
         return response_error(str(e))
 
-    return response_success(pl_list)
+    return response_success(result)
 
 ### 流水线增加
 @app.route('/pl/add', methods=['POST'])
 def pl_add():
-    # 读取入参
-    req = request.get_json()
-    id = f"PL{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}"
-    code = req.get('code')
-    name = req.get('name')
-    ctx = req.get('ctx',{})
-    desc = req.get('desc')
-    stars = req.get('stars')
-    tasks = req.get('tasks')
-
-    pl_list = app.data.get('pl')
+    pl_ls = app.data.get('pl')
     try:
         # 新增
         pl = {
-            'id': id,
-            'code': code,
-            'name': name,
-            'ctx': ctx,
-            'desc': desc,
-            'stars': stars,
-            'tasks': tasks,
+            'id': f"PL{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}",
+            'code': '',
+            'name': '',
+            'ctx': {},
+            'desc': '',
+            'stars': 0,
+            'tasks': [],
             'create_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         }
-        pl_list.append(pl)
+        pl_ls.append(pl)
     except Exception as e:
         return response_error(str(e))
-    return response_success(pl_list)
-
-def find_item_by_id(lst:list, target_id:str)->(dict|None):
-    """
-    查找列表中 id 匹配的项
-    :param lst: 列表
-    :param target_id: 目标 id
-    :return: 匹配的项，未找到时返回 None
-    """
-    for item in lst:
-        # 检查item是否为字典并包含id键
-        if isinstance(item, dict):
-            if 'id' in item and item['id'] == target_id:
-                return item
-        # 检查item是否为对象并包含id属性
-        elif hasattr(item, 'id') and item.id == target_id:
-            return item
-    return None  # 未找到匹配项时返回None
+    return response_success(pl)
 
 ### 流水线更新
 @app.route('/pl/update', methods=['POST'])
@@ -103,6 +102,8 @@ def pl_update():
     # 读取入参
     req = request.get_json()
     id = req.get('id')
+    if not id:
+        return response_error('id not be empty')
     code = req.get('code')
     name = req.get('name')
     ctx = req.get('ctx',{})
@@ -111,13 +112,10 @@ def pl_update():
     tasks = req.get('tasks')
     try:
         # 读取json文件
-        pl_list = app.data.get('pl')
-        # 如果 id 有值 则根据 id 精确匹配
-        if not id:
-            return response_error('id not be empty')
+        pl_ls = app.data.get('pl')
 
         # 查找 id 匹配的项
-        pl = find_item_by_id(pl_list, id)
+        pl = find(pl_ls, lambda x: x.get('id') == id)
         if not pl:
             return response_error('id not found')
         
@@ -132,7 +130,7 @@ def pl_update():
 
     except Exception as e:
         return response_error(str(e))
-    return response_success(pl_list)
+    return response_success(_pl_list())
 
 ### 流水线删除
 @app.route('/pl/del', methods=['POST'])
@@ -140,13 +138,15 @@ def pl_delete():
     ids = request.get_json()
     if not ids:
         return response_error('Missing required params')
-    pl_list = app.data.get('pl')
-    if not pl_list:
-        return response_error('pl_list is empty')
+    pl_ls = app.data.get('pl')
+    if not pl_ls:
+        return response_error('pl_ls is empty')
     # 查找并删除指定ids的元素
-    pl_list[:] = [item for item in pl_list if item.get('id') not in ids]
+    pl_ls[:] = [item for item in pl_ls if item.get('id') not in ids]
+
+    _task_del(app.data.get('tasks'), ids)
     
-    return response_success(pl_list, msg="删除成功")
+    return response_success(_pl_list(), msg="删除成功")
 
 def find(ls:List[Any] ,match:Callable[[Any],bool])->(Any|None):
     """
@@ -173,8 +173,8 @@ def pl_exec():
     try:
         # 读取json文件
         with open('data/pl.json', 'r', encoding='utf-8') as f:
-            pl_list = json.load(f)
-            pl = find(pl_list, lambda x: x.get('id') == id)
+            pl_ls = json.load(f)
+            pl = find(pl_ls, lambda x: x.get('id') == id)
             if not pl:
                 return response_error('id not found')
             ctx = pl.get('ctx',{})
@@ -231,7 +231,7 @@ def init_params(params:Dict[str, str], ctx: Dict[str, Any]):
         return res
     for key, value in params.items():
         if isinstance(value, str) and value.startswith('>'):
-            value = eval(value[1:])
+            value = eval(value[1:],globals(), ctx)
         res[key] = value
     return res
 
@@ -344,6 +344,94 @@ def task_start():
         return response_error(str(e))
     return response_success(result)
 
+def _task_update(new_task:Dict[str, Any], task:Dict[str, Any]):
+    """
+    更新任务
+    :param new_task: 新任务
+    :param task: 任务
+    :return: 更新后的任务
+    """
+    new_task['id'] = task.get('id', f"T{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}")
+    new_task['pl_id'] = task.get('pl_id', '')
+    new_task['on'] = task.get('on', True)
+    new_task['code'] = task.get('code', '')
+    new_task['desc'] = task.get('desc', '')
+    new_task['params'] = task.get('params', {})
+    new_task['childeren'] = task.get('childeren', [])
+    new_task['create_time'] = task.get('create_time', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    new_task['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return new_task
+
+
+@app.route('/task/add', methods=['POST'])
+def task_add():
+    # 读取入参
+    req = request.get_json()
+    task = req.get('task')
+    pl_id = task.get('pl_id')
+    if not pl_id:
+        return response_error('Missing required params: plIid')
+
+    try:
+        tasks_list = app.data.get('tasks')
+        new_task = {}
+        _task_update(new_task, task)
+        tasks_list.append(new_task)
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(task_list)
+
+@app.route('/task/update', methods=['POST'])
+def task_update():
+    # 读取入参
+    req = request.get_json()
+    task = req.get('task')
+    pl_id = task.get('pl_id')
+    if not pl_id:
+        return response_error('Missing required params: plIid')
+
+    try:
+        tasks_list = app.data.get('tasks')
+        new_task = find(tasks_list, lambda t:t == task.get('id'))
+        if not new_task:
+            return response_error('Task not found')
+        _task_update(new_task, task)
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(task_list)
+
+def _task_del(task_list:List[Dict[str, Any]], ids:List[str]):
+    """
+    删除任务
+    :param task_list: 任务列表
+    :param ids: 任务id列表
+    :return: 删除后的任务列表
+    """
+    task_list[:] = [item for item in task_list if item.get('id') not in ids]
+    return task_list
+
+@app.route('/task/del', methods=['POST'])
+def task_del():
+    # 读取入参
+    req = request.get_json()
+    ids = req.get('ids')
+    if not ids:
+        return response_error('Missing required params: ids')
+
+    try:
+        tasks_list = app.data.get('tasks')
+        _task_del(tasks_list, ids)
+        # 删除 pl_list 中每个pl下tasks
+        pl_ids = [item.get('pl_id') for item in tasks_list if item.get('id') in ids]
+        print(pl_ids)
+        pl_ls = app.data.get('pl')
+        for pl in pl_ls:
+            if pl.get('id') in pl_ids:
+                pl['tasks'] = [item for item in pl['tasks'] if item.get('id') not in ids]
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(tasks_list, msg="删除成功")
+
 
 def response_success(data, msg='success', page:dict={}):
     return jsonify({'code': 'success', 'msg': msg, 'data': data, 'page': page})
@@ -360,9 +448,9 @@ def all_save():
 @app.teardown_appcontext
 def shutdown_hook(exception = None):
     # 写入json文件
-    pl_list = app.data.get('pl')
+    pl_ls = app.data.get('pl')
     with open('data/pl.json', 'w', encoding='utf-8') as f:
-        json.dump(pl_list, f, ensure_ascii=False, indent=2)
+        json.dump(pl_ls, f, ensure_ascii=False, indent=2)
     tasks_list = app.data.get('tasks')
     with open('data/tasks.json', 'w', encoding='utf-8') as f:
         json.dump(tasks_list, f, ensure_ascii=False, indent=2)

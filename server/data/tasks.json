@@ -1,27 +1,6 @@
 [
   {
-    "id": "T1756043393860",
-    "code": "find",
-    "params": {
-      "patterns": [
-        "B\\d+",
-        ".*"
-      ]
-    },
-    "on": true
-  },
-  {
     "id": "T1756043393861",
-    "code": "rename",
-    "params": {
-      "new_name": "zip",
-      "path": ">result.get(\"path\",[])[0]",
-      "rule": "ext"
-    },
-    "on": true
-  },
-  {
-    "id": "T1756043393862",
     "code": "find",
     "params": {
       "patterns": [
@@ -31,32 +10,13 @@
     "on": true
   },
   {
-    "id": "T1756043393863",
     "code": "rename",
-    "params": {
-      "new_name": ".zip",
-      "path": ">result.path",
-      "rule": "ext"
-    },
-    "on": true
-  },
-  {
-    "id": "T1756043393864",
-    "code": "find",
-    "params": {
-      "patterns": [
-        "v\\d{14}\\\\.*\\.mp4"
-      ]
-    },
-    "on": true
-  },
-  {
     "id": "1756485181427",
-    "code": "rename",
     "params": {
       "new_name": ".zip",
       "path": ">result.path",
       "rule": "ext"
-    }
+    },
+    "on": true
   }
 ]
