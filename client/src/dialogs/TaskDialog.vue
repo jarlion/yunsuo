@@ -246,6 +246,7 @@ function show(tc: ITaskConfig) {
     getSingleton<TaskManager>("taskManager")?.getTask(tc.code) ||
     createDefaultTask();
   model.value = clone(tc);
+  result.value = "";
   visible.value = true;
 }
 

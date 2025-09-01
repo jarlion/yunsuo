@@ -1,11 +1,14 @@
 import { request } from "@/conn/Connection";
 import type { ITaskConfig } from "@/models/Task";
 
-export function add(pl_id: string) {
-  return request<ITaskConfig, { pl_id: string }>({
+export function add(params: IAddTaskParams) {
+  return request<ITaskConfig, IAddTaskParams>({
     url: "task/add",
-    params: {
-      pl_id,
-    },
+    params,
   });
+}
+
+export interface IAddTaskParams {
+  pl_id: string;
+  pid?: string;
 }

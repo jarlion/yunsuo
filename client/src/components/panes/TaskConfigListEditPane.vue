@@ -1,27 +1,35 @@
 <template>
   <ListEditPane
     :columns="columns"
-    v-model="model"
+    v-model="tree"
     @refresh="onRefresh"
     @delete="onDelete"
     @edit="onEdit"
     :width="$attrs.width"
     :height="$attrs.height"
+    expand-column-key="code"
   />
   <TaskDialog ref="taskDialogRef" :ctx="ctx" @ok="onOk" />
 </template>
 <script setup lang="tsx">
-import { Bottom, Delete, Operation, Top } from "@element-plus/icons-vue";
+import {
+  Bottom,
+  CirclePlus,
+  Delete,
+  Operation,
+  Top,
+} from "@element-plus/icons-vue";
 import { ElButton, ElMessage, ElSwitch, type Column } from "element-plus";
-import { ref, type PropType } from "vue";
+import { computed, ref, type PropType } from "vue";
 
 import ListEditPane from "@/components/panes/ListEditPane.vue";
 import TaskDialog from "@/dialogs/TaskDialog.vue";
 import { initRecord, TaskManager, type ITaskConfig } from "@/models/Task";
+import { list } from "@/protocols/pl/task/list";
 import { add } from "@/protocols/task/add";
 import { del } from "@/protocols/task/del";
 import { getSingleton } from "@/utils/singleton";
-import { list } from "@/protocols/pl/task/list";
+import { initTree } from "@/utils/treeUtil";
 
 interface ITaskConfigRow extends ITaskConfig {
   checked: boolean;
@@ -44,6 +52,10 @@ const model = defineModel({
   type: Array as PropType<ITaskConfigRow[]>,
   default: [],
 });
+
+const tree = computed(() =>
+  initTree({ data: model.value, dataKey: "id", parentKey: "parentId" })
+);
 
 const initParams = (code: string, rowData: ITaskConfigRow) => {
   if (!code) {
@@ -96,6 +108,13 @@ const columns: Column<any>[] = [
           }}
         />
         <ElButton
+          icon={CirclePlus}
+          link
+          onClick={(e) => {
+            onAddSubtask(rowData);
+          }}
+        />
+        <ElButton
           icon={Top}
           link
           onClick={(e) => {
@@ -122,7 +141,7 @@ const columns: Column<any>[] = [
         />
       </>
     ),
-    width: 130,
+    width: 150,
   },
 ];
 
@@ -142,14 +161,20 @@ function getTaskDescription(code: string) {
 }
 
 async function onRefresh() {
-  model.value = (await list({ pl_id: props.pipelineId })).map((i) => ({ ...i, checked: false }));
+  model.value = (await list({ pl_id: props.pipelineId })).map((i) => ({
+    ...i,
+    checked: false,
+  }));
 }
 
 async function onDelete(rows: ITaskConfigRow[]) {
   const ids = rows.map((i) => i.id);
   try {
-    await del(ids)
-    model.value = (await list({ pl_id: props.pipelineId })).map((i) => ({ ...i, checked: false }));
+    await del(ids);
+    model.value = (await list({ pl_id: props.pipelineId })).map((i) => ({
+      ...i,
+      checked: false,
+    }));
     // model.value = (await del(ids)).map((i) => ({ ...i, checked: false }));
   } catch (err) {
     ElMessage.error((err as Error).message);
@@ -160,7 +185,7 @@ async function onEdit(row: ITaskConfig) {
   try {
     let tc = row;
     if (!tc) {
-      tc = await add(props.pipelineId);
+      tc = await add({ pl_id: props.pipelineId });
       model.value.push({ ...tc, checked: false });
     }
     taskDialogRef.value.show(tc);
@@ -169,13 +194,22 @@ async function onEdit(row: ITaskConfig) {
   }
 }
 
-async function onOk(tc: ITaskConfig) {
+async function onAddSubtask(row: ITaskConfig) {
   try {
-    await onRefresh()
-    initParams(tc.code, {...tc, checked: false});
+    const tc = await add({ pid: row.id, pl_id: props.pipelineId });
+    model.value.push({ ...tc, checked: false });
+    taskDialogRef.value.show(tc);
   } catch (err) {
     ElMessage.error((err as Error).message);
   }
 }
 
+async function onOk(tc: ITaskConfig) {
+  try {
+    await onRefresh();
+    initParams(tc.code, { ...tc, checked: false });
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
+}
 </script>

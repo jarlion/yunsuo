@@ -15,13 +15,18 @@
           :data="model"
           :width="w"
           :height="h"
+          :expand-column-key="expandColumnKey"
         />
       </template>
     </el-auto-resizer>
   </div>
 </template>
 
-<script lang="tsx" setup generic="T extends { checked: boolean }">
+<script
+  lang="tsx"
+  setup
+  generic="T extends { checked: boolean, children?: T[] }"
+>
 import { type SelectionCellProps } from "@/components/tables/cells/TableCell";
 import { Delete, Plus, RefreshRight } from "@element-plus/icons-vue";
 import {
@@ -46,6 +51,9 @@ const props = defineProps({
   columns: {
     type: Array as PropType<Column<any>[]>,
     default: () => [],
+  },
+  expandColumnKey: {
+    type: String,
   },
   width: {
     type: Number,
