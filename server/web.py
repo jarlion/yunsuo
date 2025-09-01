@@ -16,24 +16,27 @@ CORS(app)
 def hello():
     return 'Hello, YunSuo!'
 
-def _init_pl_task(pl:Dict[str,Any]):
+def exec_script(script:str, ctx:Dict[str, Any], env:Dict[str, Any]|None=None)->Any:
+    if env is None:
+        env = globals()
+    locals = ctx.copy()
+    locals['output'] = None
+    exec(script, env, locals)
+    return locals.get('output', None)
+
+def _init_tasks(task_ids: List[str]) -> List[Dict[str, Any]]:
     """
     初始化流水线任务
     :param pl: 流水线
     :return: None
     """
-    tasks = pl.get('tasks')
-    if not tasks:
-        return pl
-    task_ids = pl.get('tasks', [])
     task_list = app.data.get('tasks')
     tasks = []
     for task_id in task_ids:
         task = find(task_list, lambda t: t.get('id') == task_id)
         if task:
             tasks.append(task)
-    pl['tasks'] = tasks
-    return pl
+    return tasks
 
 def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool|None=None):
     """
@@ -66,7 +69,7 @@ def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool
     if task_list:
         for pl in pl_ls:
             new_pl = pl.copy()
-            _init_pl_task(new_pl)
+            new_pl['tasks'] = _init_tasks(new_pl.get('tasks', []))
             result.append(new_pl)
     return result
 
@@ -122,6 +125,7 @@ def pl_update():
     desc = req.get('desc')
     stars = req.get('stars')
     tasks = req.get('tasks')
+    pid = req.get('pid')
     try:
         # 读取json文件
         pl_ls = app.data.get('pl')
@@ -130,6 +134,8 @@ def pl_update():
         pl = find(pl_ls, lambda x: x.get('id') == id)
         if not pl:
             return response_error('id not found')
+        if pid:
+            pl['pid'] = pid
         if code:
             pl['code'] = code
         if name:
@@ -177,7 +183,7 @@ def pl_task():
         pl = find(pl_ls, lambda p: p.get('id') == pl_id)
         if not pl:
             return response_error('pl not found')
-        result = _init_pl_task(pl.copy()).get("tasks")
+        result = _init_tasks(pl.copy().get('tasks', []))
     except Exception as e:
         return response_error(str(e))
     return response_success(result)
@@ -236,6 +242,9 @@ def exec_tasks(tasks:List[dict], ctx: Dict[str, Any]):
             print(f"Warning: Task has no code attribute: {task}")
             continue
         
+        call_subtasks = _init_tasks(task.get('children', []))
+        if call_subtasks:
+            ctx['call_subtasks'] = call_subtasks
         params = init_params(task.get('params', {}), ctx)
         # 先读取info.json获取任务信息
         with open(f'tasks/{code}/def.json', 'r', encoding='utf-8') as f:
@@ -415,6 +424,8 @@ def task_add():
     if not pl_id:
         return response_error('Missing required params: plIid')
 
+    pid = req.get('pid')
+
     pl = find(app.data.get('pl'), lambda p:p.get('id') == pl_id)
     if not pl:
         return response_error('Plugin not found')
@@ -422,6 +433,7 @@ def task_add():
         tasks_list = app.data.get('tasks')
         new_task = {
             "id": f"T{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}",
+            "pid": pid,
             "pl_id": pl_id,
             "code": "",
             "on": True,
