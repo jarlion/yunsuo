@@ -15,7 +15,6 @@ export function initTree<
 }: IInitTreeOptions<T>): T[] {
   const tree: T[] = [];
   const childrenMap: Record<string | number, T[]> = {};
-  debugger
 
   for (const datum of data) {
     const item = { ...datum };

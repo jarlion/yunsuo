@@ -38,6 +38,25 @@ def _init_tasks(task_ids: List[str]) -> List[Dict[str, Any]]:
             tasks.append(task)
     return tasks
 
+def _init_context(ctx:Dict[str, Any]):
+    """
+    初始化上下文
+    :param ctx: 上下文
+    :return: None
+    """
+    ctx['app'] = app
+    ctx['request'] = request
+    ctx['jsonify'] = jsonify
+    ctx['json'] = json
+    ctx['os'] = os
+    ctx['random'] = random
+    ctx['datetime'] = datetime
+    ctx['importlib'] = importlib
+    ctx['exec_script'] = exec_script
+    ctx['find'] = find
+    ctx['_init_tasks'] = _init_tasks
+    return ctx
+
 def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool|None=None):
     """
     获取流水线列表
@@ -218,11 +237,11 @@ def pl_exec():
             pl = find(pl_ls, lambda p: p.get('id') == id)
             if not pl:
                 return response_error('id not found')
-            ctx = pl.get('ctx',{})
+            context = _init_context(pl.get('ctx',{}))
             tasks = pl.get('tasks')
             if not tasks:
                 return response_error('tasks not found')
-            result = exec_tasks(tasks, ctx)
+            result = exec_tasks(tasks, context)
     except Exception as e:
         return response_error(str(e))
     return response_success(result)

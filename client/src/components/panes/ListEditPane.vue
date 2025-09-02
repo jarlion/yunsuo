@@ -129,7 +129,7 @@ const editedColumns = computed(() => {
   return [
     {
       key: "selection",
-      width: 50,
+      width: 40,
       cellRenderer: ({ rowData }: { rowData: T }) => {
         const onChange = (value: CheckboxValueType) =>
           (rowData.checked = Boolean(value));

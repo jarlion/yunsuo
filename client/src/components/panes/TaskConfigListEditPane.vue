@@ -54,7 +54,7 @@ const model = defineModel({
 });
 
 const tree = computed(() =>
-  initTree({ data: model.value, dataKey: "id", parentKey: "parentId" })
+  initTree({ data: model.value, dataKey: "id", parentKey: "pid" })
 );
 
 const initParams = (code: string, rowData: ITaskConfigRow) => {

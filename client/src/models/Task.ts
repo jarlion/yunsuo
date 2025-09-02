@@ -21,7 +21,7 @@ export interface ITask {
 
 export interface ITaskConfig {
   id: string;
-  parentId?: string;
+  pid?: string;
   pipelineId: string;
   code: string;
   on: boolean;
