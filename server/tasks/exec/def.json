@@ -4,14 +4,6 @@
   "desc": "执行脚本",
   "params": [
     {
-      "name": "source",
-      "type": "string",
-      "required": true,
-      "desc": "执行源数组",
-      "default": "",
-      "placeholder": "输入执行源数组或者 >表达式"
-    },
-    {
       "name": "script",
       "type": "code",
       "required": true,
@@ -21,7 +13,7 @@
     }
   ],
   "result": {
-    "type": "any[]",
+    "type": "any",
     "desc": "执行结果"
   },
   "script": "main.py"

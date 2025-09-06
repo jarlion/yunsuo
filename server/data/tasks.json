@@ -23,17 +23,17 @@
     "id": "T202508311845081295",
     "pl_id": "",
     "code": "loop",
-    "on": false,
+    "on": true,
     "params": {
       "after": "66",
       "before": "55",
       "condition": "5555",
-      "source": "44",
-      "script": "55"
+      "script": "55",
+      "source": "44"
     },
     "childeren": [],
-    "create_time": "2025-09-01 00:34:28",
-    "update_time": "2025-09-01 00:34:28"
+    "create_time": "2025-09-06 11:22:36",
+    "update_time": "2025-09-06 11:22:36"
   },
   {
     "id": "T202508312308517194",
@@ -56,13 +56,57 @@
     "pid": "T202508311845081295",
     "pl_id": "",
     "code": "exec",
-    "on": false,
+    "on": true,
     "params": {
-      "source": "55",
-      "script": "66"
+      "script": "print(result)"
     },
     "childeren": [],
-    "create_time": "2025-09-01 00:33:18",
-    "update_time": "2025-09-01 00:33:18"
+    "create_time": "2025-09-06 11:21:15",
+    "update_time": "2025-09-06 11:21:15"
+  },
+  {
+    "id": "T2025090622442366",
+    "pl_id": "",
+    "code": "find",
+    "on": true,
+    "params": {
+      "patterns": [
+        "B\\d+",
+        "\\.(AZ|DN)$"
+      ]
+    },
+    "desc": "",
+    "childeren": [],
+    "create_time": "2025-09-06 22:44:23",
+    "update_time": "2025-09-06 22:44:23"
+  },
+  {
+    "id": "T202509062244238319",
+    "pl_id": "",
+    "code": "loop",
+    "on": true,
+    "params": {
+      "after": "66",
+      "before": "55",
+      "condition": "5555",
+      "script": "55",
+      "source": "44"
+    },
+    "childeren": [],
+    "create_time": "2025-09-06 22:44:23",
+    "update_time": "2025-09-06 22:44:23"
+  },
+  {
+    "id": "T202509062244233635",
+    "pid": "T202509062244238319",
+    "pl_id": "",
+    "code": "exec",
+    "on": true,
+    "params": {
+      "script": "print(result)"
+    },
+    "childeren": [],
+    "create_time": "2025-09-06 22:44:23",
+    "update_time": "2025-09-06 22:44:23"
   }
 ]

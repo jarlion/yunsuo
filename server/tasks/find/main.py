@@ -30,8 +30,10 @@ def append_match_paths(match_paths: List[str], path: str, regexps: List[re.Patte
         return
     
     for regexp in regexps:
-        if regexp.search(path):
-            match_paths.append(path)
+        if not regexp.search(path):
+            break
+    else:
+        match_paths.append(path)
 
 
 if __name__ == '__main__':

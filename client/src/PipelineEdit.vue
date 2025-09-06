@@ -37,7 +37,8 @@ import { add } from "@/protocols/pl/add";
 import { del } from "@/protocols/pl/del";
 import { list } from "@/protocols/pl/list";
 import { update } from "@/protocols/pl/update";
-import { exec } from "./protocols/pl/exec";
+import { exec } from "@/protocols/pl/exec";
+import { copy } from "@/protocols/pl/copy";
 
 const model = ref<(IPipeline & { checked: boolean })[]>([]);
 
@@ -143,10 +144,17 @@ async function onEdit(row?: IPipeline) {
   pipelineDlgRef.value?.show(row);
 }
 
-function onCopy(row: IPipeline) {
-  const newPipeline = clone(row);
-  newPipeline.id = "";
-  onEdit(newPipeline);
+async function onCopy(row: IPipeline) {
+  if (!row?.id) {
+    ElMessage.error("请先保存流水线");
+    return;
+  }
+  try {
+    const newPipeline = await copy(row.id);
+    onEdit(newPipeline);
+  } catch (err) {
+    ElMessage.error((err as Error).message);
+  }
 }
 
 async function onChangeStars(row: IPipeline, stars: number) {

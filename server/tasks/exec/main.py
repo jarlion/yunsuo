@@ -2,44 +2,36 @@ import os
 import re
 from typing import List, Dict, Any
 
-def exec_script(script: str, source: Any, env: Dict[str, Any] | None = None) -> Any:
-    if not env:
-        env = globals()
-    local_dict = { 'output':None, 'iter':source }
-    exec(script, env, local_dict)
-    return local_dict.get('output', None)
-
 def main(params:Dict[str, Any], ctx:Dict[str, Any])->List[Any]:
     script = params.get('script', '')
     if not script:
         raise ValueError("Missing required params: script")
     
-    source_str = params.get('source', '')
-    if not source_str:
-        raise ValueError("Missing required params: source")
-    source = eval(source_str[1:], globals()) if source_str.startswith('>') else source_str
+    exec_script = ctx.get('exec_script')
+    if not exec_script:
+        raise ValueError("Missing required ctx: exec_script")
     
-    results = []
-    # 如果source是字符串，直接执行script
-    if isinstance(source, str):
-        results.append(exec_script(script, source))
-    # 如果source是列表，遍历执行script  
-    if isinstance(source, list):
-        for item in source:
-            result = exec_script(script, item)
-            if result:
-                results.append(result)
+    context = ctx.copy()
 
-    ctx['result'] = results
-    return results
+    result = exec_script(script, context)
+
+    ctx['result'] = result
+    return result
 
 
 if __name__ == '__main__':
-    result = {'path': ['v:\\B994', 'v:\\B994\\B994.AZ', 'v:\\B994\\B994.DN']}
-    dirs = main({'source': ">result['path']", 'script': '''
-if os.path.isfile(iter):
-    output = iter + ".zip"
-    os.rename(iter, output)
-    '''}, {})
+    def exec_script(script:str, ctx:Dict[str, Any], env:Dict[str, Any]|None=None)->Any:
+        if env is None:
+            env = globals()
+        locals = ctx.copy()
+        locals['output'] = None
+        exec(script, env, locals)
+        return locals.get('output', None)
+    result = 'V:\\M2510-2103\\[Prejudice-Studio] BanG Dream! Ave Mujica 颂乐人偶 - 11 [Bilibili WEB-DL 1080P AVC 8bit AAC MP4][简日内嵌]_3\\[Prejudice-Studio] BanG Dream! Ave Mujica 颂乐人偶 - 11 [Bilibili WEB-DL 1080P AVC 8bit AAC MP4][简日内嵌]_3.mp4'
+    dirs = main({'script': '''
+if os.path.isfile(result):
+    output = result + ".zip"
+    print(output)
+    '''}, {'exec_script':exec_script, 'result': result})
     print(dirs)
 

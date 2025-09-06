@@ -130,6 +130,34 @@ def pl_add():
         return response_error(str(e))
     return response_success(pl)
 
+@app.route('/pl/copy', methods=['POST'])
+def pl_copy():
+    req = request.get_json()
+    pl_id = req.get('id')
+    if not pl_id:
+        return response_error('pl_id not be empty')
+    try:
+        pl_ls = app.data.get('pl')
+        pl = find(pl_ls, lambda x: x.get('id') == pl_id)
+        if not pl:
+            return response_error('pl_id not found')
+    except Exception as e:
+        return response_error(str(e))
+    try:
+        pl_ls = app.data.get('pl')
+        new_pl = pl.copy()
+        new_pl['id'] = f"PL{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}"
+        new_pl['create_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        new_pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        new_tasks = tasks_copy(new_pl.get('tasks', []))
+        # new_pl['tasks_id'] = [t.get('id') for t in new_tasks]
+        new_pl['tasks'] = new_tasks
+        pl_ls.append(new_pl)
+    except Exception as e:
+        return response_error(str(e))
+    return response_success(new_pl)
+
+
 ### 流水线更新
 @app.route('/pl/update', methods=['POST'])
 def pl_update():
@@ -354,7 +382,7 @@ def task_test():
     req = request.get_json()
     code = req.get('code')
     params = req.get('params')
-    ctx = req.get('ctx',{})
+    ctx = _init_context(req.get('ctx',{}))
     try:
         # 读取json文件
         with open(f'tasks/{code}/def.json', 'r', encoding='utf-8') as f:
@@ -367,6 +395,42 @@ def task_test():
     except Exception as e:
         return response_error(str(e))
     return response_success(result)
+
+def tasks_copy(task_ids:List[str]) -> List[Dict[str, Any]]:
+    """
+    复制任务
+    :param task_ids: 任务id列表
+    :return: 复制后的任务列表
+    """
+    task_list = app.data.get('tasks', [])
+    new_task_list = []
+    task_id_ref:Dict[str, Any] = {}
+    for task_id in task_ids:
+        task = find(task_list, lambda t: t.get('id') == task_id)
+        if not task:
+            continue
+        new_task = task_copy(task)
+        task_id_ref[task_id] = new_task.get('id')
+        task_list.append(new_task)
+        new_task_list.append(new_task)
+    # 处理子任务
+    for task in new_task_list:
+        parent_id = task.get('pid')
+        if parent_id and parent_id in task_id_ref:
+            task['pid'] = task_id_ref[parent_id]
+    return new_task_list
+
+def task_copy(task:Dict[str, Any]) -> Dict[str, Any]:
+    """
+    复制任务
+    :param task_ids: 任务id列表
+    :return: 复制后的任务列表
+    """
+    new_task = task.copy()
+    new_task['id'] = f"T{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}"        
+    new_task['create_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    new_task['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return new_task
 
 def load_and_run(filepath: str, *args, **kwargs):
     """
