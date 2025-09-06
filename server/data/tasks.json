@@ -86,15 +86,15 @@
     "code": "loop",
     "on": true,
     "params": {
-      "after": "66",
-      "before": "55",
-      "condition": "5555",
+      "after": "output=cd[:]=cd[1:]",
+      "before": "output=cd=result[0]",
+      "condition": ">len(cd)",
       "script": "55",
       "source": "44"
     },
     "childeren": [],
-    "create_time": "2025-09-06 22:44:23",
-    "update_time": "2025-09-06 22:44:23"
+    "create_time": "2025-09-06 23:26:51",
+    "update_time": "2025-09-06 23:26:51"
   },
   {
     "id": "T202509062244233635",
