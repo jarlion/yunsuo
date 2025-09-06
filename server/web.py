@@ -320,8 +320,6 @@ def init_params(params:Dict[str, str], ctx: Dict[str, Any]):
     if not params: 
         return res
     for key, value in params.items():
-        if isinstance(value, str) and value.startswith('>'):
-            value = eval(value[1:],globals(), ctx)
         res[key] = value
     return res
 

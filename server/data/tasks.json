@@ -87,7 +87,7 @@
     "on": true,
     "params": {
       "after": "output=cd[:]=cd[1:]",
-      "before": "output=cd=result[0]",
+      "before": "output=cd=result",
       "condition": ">len(cd)"
     },
     "childeren": [],
