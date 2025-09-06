@@ -88,9 +88,7 @@
     "params": {
       "after": "output=cd[:]=cd[1:]",
       "before": "output=cd=result[0]",
-      "condition": ">len(cd)",
-      "script": "55",
-      "source": "44"
+      "condition": ">len(cd)"
     },
     "childeren": [],
     "create_time": "2025-09-06 23:26:51",
