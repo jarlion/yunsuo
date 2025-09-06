@@ -71,14 +71,14 @@
     "on": true,
     "params": {
       "patterns": [
-        "B\\d+",
-        "\\.(AZ|DN)$"
+        "M\\d+",
+        "\\.mp4$"
       ]
     },
     "desc": "",
     "childeren": [],
-    "create_time": "2025-09-06 22:44:23",
-    "update_time": "2025-09-06 22:44:23"
+    "create_time": "2025-09-06 22:55:42",
+    "update_time": "2025-09-06 22:55:42"
   },
   {
     "id": "T202509062244238319",
@@ -100,13 +100,15 @@
     "id": "T202509062244233635",
     "pid": "T202509062244238319",
     "pl_id": "",
-    "code": "exec",
+    "code": "rename",
     "on": true,
     "params": {
-      "script": "print(result)"
+      "path": ">result",
+      "new_name": ".zip",
+      "rule": ""
     },
     "childeren": [],
-    "create_time": "2025-09-06 22:44:23",
-    "update_time": "2025-09-06 22:44:23"
+    "create_time": "2025-09-06 22:58:24",
+    "update_time": "2025-09-06 22:58:24"
   }
 ]

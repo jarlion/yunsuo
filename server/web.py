@@ -260,16 +260,15 @@ def pl_exec():
     
     try:
         # 读取json文件
-        with open('data/pl.json', 'r', encoding='utf-8') as f:
-            pl_ls = json.load(f)
-            pl = find(pl_ls, lambda p: p.get('id') == id)
-            if not pl:
-                return response_error('id not found')
-            context = _init_context(pl.get('ctx',{}))
-            tasks = pl.get('tasks')
-            if not tasks:
-                return response_error('tasks not found')
-            result = exec_tasks(tasks, context)
+        pl_ls = app.data.get('pl')
+        pl = find(pl_ls, lambda p: p.get('id') == id)
+        if not pl:
+            return response_error('id not found')
+        context = _init_context(pl.get('ctx',{}))
+        tasks = _init_tasks(pl.get('tasks', []))
+        if not tasks:
+            return response_error('tasks not found')
+        result = exec_tasks(tasks, context)
     except Exception as e:
         return response_error(str(e))
     return response_success(result)
