@@ -458,7 +458,10 @@ def load_and_run(filepath: str, *args, **kwargs):
     # 4. 取 main 函数并调用
     if not hasattr(module, 'main'):
         raise AttributeError(f"{filepath} has no 'main' function")
-    return module.main(*args, **kwargs)
+    try:
+        return module.main(*args, **kwargs)
+    except Exception as e:
+        raise ImportError(f"Error executing module {filepath}: {e}")
 
 ### 任务执行  
 @app.route('/task/start', methods=['POST'])   
@@ -578,19 +581,22 @@ def task_del():
 
 
 def response_success(data, msg='success', page:dict={}):
+    # 请求成功时保存数据
+    save_data()
     return jsonify({'code': 'success', 'msg': msg, 'data': data, 'page': page})
 
 def response_error(msg='error', code='error'):
+    # 请求失败时不保存数据
     return jsonify({'code': code, 'msg': msg})
 
 @app.route('/all/save', methods=['POST']) 
 def all_save():
     # 读取入
-    shutdown_hook()
+    save_data()
     return response_success('success')
 
-@app.teardown_appcontext
-def shutdown_hook(exception = None):
+# 只在成功响应时保存数据的函数
+def save_data():
     # 写入json文件
     pl_ls = app.data.get('pl')
     with open('data/pl.json', 'w', encoding='utf-8') as f:
@@ -598,6 +604,14 @@ def shutdown_hook(exception = None):
     tasks_list = app.data.get('tasks')
     with open('data/tasks.json', 'w', encoding='utf-8') as f:
         json.dump(tasks_list, f, ensure_ascii=False, indent=2)
+
+@app.teardown_appcontext
+def shutdown_hook(exception = None):
+    if exception:
+        print(exception)
+    # 不再在请求结束时自动保存数据
+    # 数据只在response_success中保存
+    return
 
 def init_data():
     if not os.path.exists('data'):
