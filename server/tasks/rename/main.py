@@ -27,7 +27,7 @@ def rename(path:str, new_name:str, rule:str)->str:
     else:
         dst = str(p) + new_name
 
-    os.rename(path, dst)
+    p.rename(dst)
     return dst
 
 if __name__ == '__main__':

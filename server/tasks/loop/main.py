@@ -20,12 +20,13 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any]) -> List[Any]|None:
 
     context = ctx.copy()
     context['cd'] = exec_script(berfore_str, context)
-    result = None
+    result = []
     i = 0
     while eval(condition_str[1:], globals(), context) and i < max_count:
         if call_subtasks:
-            call_subtasks(context)
-        result = exec_script(after_str, context)
+            context['cur'] = context.get('cd', [])[0]
+            result.append(call_subtasks(context))
+        exec_script(after_str, context)
         i += 1
     return result
 

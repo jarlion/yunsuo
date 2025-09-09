@@ -8,6 +8,7 @@ import random
 from datetime import datetime
 import importlib.util
 from typing import List,Dict,Any
+from pathlib import Path
 
 app = Flask(__name__)
 CORS(app)
@@ -44,18 +45,19 @@ def _init_context(ctx:Dict[str, Any]):
     :param ctx: 上下文
     :return: None
     """
-    ctx['app'] = app
-    ctx['request'] = request
-    ctx['jsonify'] = jsonify
-    ctx['json'] = json
-    ctx['os'] = os
-    ctx['random'] = random
-    ctx['datetime'] = datetime
-    ctx['importlib'] = importlib
-    ctx['exec_script'] = exec_script
-    ctx['find'] = find
-    ctx['_init_tasks'] = _init_tasks
-    return ctx
+    context = ctx.copy()
+    context['app'] = app
+    context['request'] = request
+    context['jsonify'] = jsonify
+    context['json'] = json
+    context['os'] = os
+    context['random'] = random
+    context['datetime'] = datetime
+    context['importlib'] = importlib
+    context['exec_script'] = exec_script
+    context['find'] = find
+    context['_init_tasks'] = _init_tasks
+    return context
 
 def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool|None=None):
     """
@@ -266,6 +268,7 @@ def pl_exec():
             return response_error('id not found')
         context = _init_context(pl.get('ctx',{}))
         tasks = _init_tasks(pl.get('tasks', []))
+        tasks = [t for t in tasks if not t.get('pid')]
         if not tasks:
             return response_error('tasks not found')
         result = exec_tasks(tasks, context)
@@ -280,6 +283,7 @@ def exec_tasks(tasks:List[dict], ctx: Dict[str, Any]):
     :return: None
     """
     result = None
+    task_list = app.data.get('tasks')
     for task in tasks:
         if not task.get('on'):
             continue
@@ -288,9 +292,10 @@ def exec_tasks(tasks:List[dict], ctx: Dict[str, Any]):
             print(f"Warning: Task has no code attribute: {task}")
             continue
         
-        call_subtasks = _init_tasks(task.get('children', []))
-        if call_subtasks:
-            ctx['call_subtasks'] = call_subtasks
+        id = task.get('id')
+        subtasks = [t for t in task_list if t.get('pid') == id]
+        if subtasks:
+            ctx['call_subtasks'] = lambda _ctx: exec_tasks(subtasks, _ctx)
         params = init_params(task.get('params', {}), ctx)
         # 先读取info.json获取任务信息
         with open(f'tasks/{code}/def.json', 'r', encoding='utf-8') as f:
@@ -387,7 +392,6 @@ def task_test():
             script = task.get('script')
             script_path = os.path.join('tasks', code, script)
             # 执行脚本
-            print(isinstance(ctx, dict), ctx.get('root'))
             result = load_and_run(script_path, params=params, ctx=ctx)
     except Exception as e:
         return response_error(str(e))
@@ -593,15 +597,35 @@ def all_save():
     save_data()
     return response_success('success')
 
+def save_atomic_write_json(data:Dict[str, Any], file_path:str, ensure_ascii=False, indent=2):
+    """
+    原子写入json文件
+    :param data: 数据
+    :param file_path: 文件路径
+    :param ensure_ascii: 是否确保ascii
+    :param indent: 缩进
+    :return: 
+    """
+    target = Path(file_path)
+    temp_file = target.with_suffix('.tmp')
+    try:
+        with temp_file.open('w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=ensure_ascii, indent=indent)
+        if target.exists():
+            target.unlink()
+        temp_file.rename(target)
+    except Exception as e:
+        print(e)
+        temp_file.unlink()
+        raise e
+
 # 只在成功响应时保存数据的函数
 def save_data():
     # 写入json文件
     pl_ls = app.data.get('pl')
-    with open('data/pl.json', 'w', encoding='utf-8') as f:
-        json.dump(pl_ls, f, ensure_ascii=False, indent=2)
-    tasks_list = app.data.get('tasks')
-    with open('data/tasks.json', 'w', encoding='utf-8') as f:
-        json.dump(tasks_list, f, ensure_ascii=False, indent=2)
+    save_atomic_write_json(pl_ls, 'data/pl.json')
+    tasks_ls = app.data.get('tasks')
+    save_atomic_write_json(tasks_ls, 'data/tasks.json')
 
 @app.teardown_appcontext
 def shutdown_hook(exception = None):
