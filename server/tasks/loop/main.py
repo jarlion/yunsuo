@@ -6,8 +6,8 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any]) -> List[Any]|None:
     exec_script =(ctx.get('exec_script'))
     if not exec_script:
         raise ValueError("Missing required ctx: exec_script")
-    berfore_str = params.get('before')
-    if not berfore_str:
+    before_str = params.get('before')
+    if not before_str:
         raise ValueError("Missing required params: before")
     condition_str = params.get('condition')
     if not condition_str:
@@ -19,7 +19,7 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any]) -> List[Any]|None:
     max_count = params.get('max', 1000)
 
     context = ctx.copy()
-    context['cd'] = exec_script(berfore_str, context)
+    context['cd'] = exec_script(before_str, context)
     result = []
     i = 0
     while eval(condition_str[1:], globals(), context) and i < max_count:

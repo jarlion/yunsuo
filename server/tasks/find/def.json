@@ -10,6 +10,14 @@
       "desc": "文件或目录路径匹配正则表达式数组",
       "default": [],
       "placeholder": "输入正则表达式数组"
+    },
+    {
+      "name": "types",
+      "type": "string[]",
+      "required": false,
+      "desc": "文件还是目录",
+      "default": ["file"],
+      "placeholder": "('file'|'dir')[]"
     }
   ],
   "ctx": [
