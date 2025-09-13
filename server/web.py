@@ -576,11 +576,28 @@ def task_del():
             if pl.get('id') in pl_ids:
                 pl['tasks'] = [task_id for task_id in pl['tasks'] if task_id not in ids]
     
+        del_task(tasks_list, ids)
     except Exception as e:
         return response_error(str(e))
     # 未定返回结果
     return response_success([], msg="删除成功")
 
+def del_task(task_list:List[Dict[str, Any]], ids:List[str]):
+    """
+    删除任务
+    :param task_list: 任务列表
+    :param ids: 任务id列表
+    :return: 删除后的任务列表
+    """
+    for item in task_list:
+        t_id = item.get('id')
+        if t_id in ids:
+            for t in task_list:
+                if t.get('pid') == t_id:
+                    t['pid'] = item.get('pid')
+        
+    task_list[:] = [item for item in task_list if item.get('id') not in ids]
+    return task_list
 
 def response_success(data, msg='success', page:dict={}):
     # 请求成功时保存数据
