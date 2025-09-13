@@ -10,6 +10,22 @@
       "desc": "源文件路径",
       "default": "",
       "placeholder": "输入源文件路径或者 >表达式"
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "required": true,
+      "desc": "密码",
+      "default": "",
+      "placeholder": "输入密码"
+    },
+    {
+      "name": "type",
+      "type": "string",
+      "required": true,
+      "desc": "提取类型 zip, rar, 7z",
+      "default": "zip",
+      "placeholder": "输入提取类型"
     }
   ],
   "result": {
