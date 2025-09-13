@@ -12,8 +12,6 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any]) -> Any|None:
     if not password:
         raise ValueError("Missing required params: password")
     type = params.get('type')
-    if not type:
-        raise ValueError("Missing required params: type")
     if type not in ['zip', 'rar', '7z']:
         raise ValueError("Invalid params: type")
     source = source_str.strip()
