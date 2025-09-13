@@ -1,0 +1,20 @@
+{
+  "code": "extract",
+  "name": "提取",
+  "desc": "提取文件",
+  "params": [
+    {
+      "name": "source",
+      "type": "string",
+      "required": true,
+      "desc": "源文件路径",
+      "default": "",
+      "placeholder": "输入源文件路径或者 >表达式"
+    }
+  ],
+  "result": {
+    "type": "string|none",
+    "desc": "提取结果文件路径，提取失败则是 none"
+  },
+  "script": "main.py"
+}
