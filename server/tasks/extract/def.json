@@ -20,12 +20,12 @@
       "placeholder": "输入密码"
     },
     {
-      "name": "type",
-      "type": "string",
+      "name": "remove",
+      "type": "boolean",
       "required": false,
-      "desc": "提取类型 zip, rar, 7z",
-      "default": "zip",
-      "placeholder": "输入提取类型"
+      "desc": "是否解压完毕之后删除源文件",
+      "default": false,
+      "placeholder": "是否解压完毕之后删除源文件"
     }
   ],
   "result": {

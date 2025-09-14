@@ -182,11 +182,13 @@
     "code": "extract",
     "on": true,
     "params": {
+      "password": "图图有佳人",
+      "remove": "true",
       "source": ">result"
     },
     "childeren": [],
-    "create_time": "2025-09-13 11:52:00",
-    "update_time": "2025-09-13 11:52:00"
+    "create_time": "2025-09-14 18:10:14",
+    "update_time": "2025-09-14 18:10:14"
   },
   {
     "id": "T20250913114636836",
