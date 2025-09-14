@@ -1,5 +1,9 @@
 <template>
-  <div class="pipeline-editor">
+  <div
+    class="pipeline-editor"
+    v-loading="Boolean(loading)"
+    :element-loading-text="loading"
+  >
     <ListEditPane
       v-model="model"
       :columns="columns"
@@ -18,27 +22,19 @@ import {
   CopyDocument,
   Delete,
   Edit,
-  Plus,
-  RefreshRight,
 } from "@element-plus/icons-vue";
-import {
-  ElButton,
-  ElMessage,
-  ElMessageBox,
-  type Column,
-  ElTooltip,
-} from "element-plus";
-import { ref, reactive } from "vue";
+import { ElAlert, ElButton, ElMessage, ElMessageBox, type Column } from "element-plus";
+import { ref } from "vue";
 
-import PipelineDialog from "@/dialogs/PipelineDialog.vue";
 import ListEditPane from "@/components/panes/ListEditPane.vue";
-import { clone, type IPipeline } from "@/models/Pipeline";
+import PipelineDialog from "@/dialogs/PipelineDialog.vue";
+import { type IPipeline } from "@/models/Pipeline";
 import { add } from "@/protocols/pl/add";
+import { copy } from "@/protocols/pl/copy";
 import { del } from "@/protocols/pl/del";
+import { exec } from "@/protocols/pl/exec";
 import { list } from "@/protocols/pl/list";
 import { update } from "@/protocols/pl/update";
-import { exec } from "@/protocols/pl/exec";
-import { copy } from "@/protocols/pl/copy";
 
 const model = ref<(IPipeline & { checked: boolean })[]>([]);
 
@@ -46,6 +42,7 @@ const pipelineDlgRef = ref<typeof PipelineDialog>();
 
 const colors = ref(["#99A9BF", "#F7BA2A", "#FF9900"]);
 
+const loading = ref("");
 // 定义表格列配置
 const columns: Column<IPipeline & { checked: boolean }>[] = [
   {
@@ -97,6 +94,7 @@ const columns: Column<IPipeline & { checked: boolean }>[] = [
           icon={CaretRight}
           type="primary"
           link
+          loading={rowData.loading}
           onClick={() => onExec(rowData)}
         />
         <ElButton icon={Edit} link onClick={() => onEdit(rowData)} />
@@ -115,12 +113,20 @@ const columns: Column<IPipeline & { checked: boolean }>[] = [
 async function onExec(row: IPipeline) {
   try {
     const { id } = row;
+    loading.value = `${row.name} 执行中...`;
     const result = await exec({
       id,
     });
-    ElMessage.success("执行成功");
+    ElMessageBox.alert(result.join(','), `${row.name} 执行成功`, {
+    confirmButtonText: 'OK',
+    callback: (action) => {
+      // 关闭
+    },
+  })
   } catch (err) {
     ElMessage.error((err as Error).message);
+  } finally {
+    loading.value = "";
   }
 }
 

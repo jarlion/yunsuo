@@ -1,8 +1,7 @@
-import type { IPipeline } from "@/models/Pipeline";
 import { request } from "@/conn/Connection";
 
 export function exec(params: IExecParams) {
-  return request<IPipeline, IExecParams>({
+  return request<string[], IExecParams>({
     url: "pl/exec",
     params,
   });
