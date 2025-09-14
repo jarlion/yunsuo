@@ -11,12 +11,17 @@ def main(params: Dict[str, Any], ctx: Dict[str, Any]) -> str:
     password = params.get("password", "")
     remove = params.get("remove", False)
     try:
-        result = unrar_with_winrar(source, password)
+        src = eval(source[1:], globals(), ctx) if source.startswith(">") else source
     except Exception as e:
-        print(f"解压失败: {e}")
+        print(f"[extract] source表达式求值失败: {e}")
+        raise e
+    try:
+        result = unrar_with_winrar(src, password)
+    except Exception as e:
+        print(f"[extract] 解压失败: {e}")
         raise e
     if remove:
-        source_path = Path(source)
+        source_path = Path(src)
         if source_path.is_dir():
             shutil.rmtree(source_path)
         elif source_path.is_file():
@@ -63,8 +68,8 @@ def unrar_with_winrar(source: str, password: str = "") -> Path:
 # ---------- 本地测试 ----------
 if __name__ == '__main__':
     params = {
-        "source": r"V:\v20250912192637\回忆 哭 台词 （ダーリン）.mp4\CUzhzF.tmp",
-        "password": "mg",
+        "source": r"V:\yhsn_hidden_8.zip",
+        "password": "图图有佳人",
         "remove": True,
     }
     result = main(params, {})

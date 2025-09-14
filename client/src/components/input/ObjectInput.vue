@@ -3,6 +3,7 @@
   <el-input v-model="model" v-bind="$attrs" @change="onChange" />
 </template>
 <script lang="ts" setup>
+import { ElMessage } from "element-plus";
 import { ref, watch } from "vue";
 
 const emit = defineEmits(["update:modelValue"]);
@@ -25,6 +26,12 @@ watch(
 );
 
 function onChange(val: string) {
-  emit("update:modelValue", JSON.parse(val));
+  try {
+    const value = JSON.parse(val);
+    emit("update:modelValue", value);
+  } catch (err) {
+    console.error(val, typeof val);
+    ElMessage.error((err as Error).message);
+  }
 }
 </script>

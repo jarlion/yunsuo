@@ -29,8 +29,8 @@
     "on": true,
     "pl_id": "",
     "childeren": [],
-    "create_time": "2025-09-11 00:21:01",
-    "update_time": "2025-09-11 00:21:01"
+    "create_time": "2025-09-14 22:20:11",
+    "update_time": "2025-09-14 22:20:11"
   },
   {
     "id": "T202508311845081295",
@@ -197,5 +197,50 @@
     "code": "",
     "on": true,
     "params": {}
+  },
+  {
+    "id": "T202509142136235450",
+    "pid": null,
+    "pl_id": "",
+    "code": "extract",
+    "on": true,
+    "params": {
+      "password": "图图有佳人",
+      "remove": false,
+      "source": ">result"
+    },
+    "childeren": [],
+    "create_time": "2025-09-14 22:01:35",
+    "update_time": "2025-09-14 22:01:35"
+  },
+  {
+    "id": "T202509142200059903",
+    "pid": null,
+    "pl_id": "",
+    "code": "rename",
+    "on": true,
+    "params": {
+      "path": ">root",
+      "new_name": "zip",
+      "rule": "ext"
+    },
+    "childeren": [],
+    "create_time": "2025-09-14 22:00:44",
+    "update_time": "2025-09-14 22:00:44"
+  },
+  {
+    "id": "T202509142212211194",
+    "pid": "T202508311845081296",
+    "pl_id": "",
+    "code": "extract",
+    "on": true,
+    "params": {
+      "source": ">result",
+      "password": "mg",
+      "remove": true
+    },
+    "childeren": [],
+    "create_time": "2025-09-14 22:12:45",
+    "update_time": "2025-09-14 22:12:45"
   }
 ]
