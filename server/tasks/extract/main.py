@@ -1,88 +1,71 @@
-import zipfile
-from typing import List, Dict, Any
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import shutil
 from pathlib import Path
-import rarfile
-import py7zr
+from typing import Dict, Any
+import subprocess
 
-def main(params:Dict[str, Any], ctx:Dict[str, Any]) -> Any|None:
-    source_str = params.get('source')
-    if not source_str:
-        raise ValueError("Missing required params: source")
-    password = params.get('password')
-    if not password:
-        raise ValueError("Missing required params: password")
-    type = params.get('type')
-    if type not in ['zip', 'rar', '7z']:
-        raise ValueError("Invalid params: type")
-    source = source_str.strip()
-    if source_str.startswith('>'):
-        source = eval(source_str[1:], globals(), ctx)
-    result = extract(source, password, type)
-    if result:
-        return [result]
-    return None
-
-def extract(source:str, password:str, type:str) -> Path|None:
-    source_path = Path(source)
-    # 解压zip
-    result = try_unzip(source_path, password)
-    if result:
-        return result
-    # 解压rar
-    result = try_unrar(source_path, password)
-    if result:
-        return result
-    # 解压7z
-    result = try_un7z(source_path, password)
-    if result:
-        return result
-    return None
-
-
-def try_unzip(path:Path, password:str) -> Path|None:
+# ---------- 通用解压 ----------
+def main(params: Dict[str, Any], ctx: Dict[str, Any]) -> str:
+    source = params["source"]
+    password = params.get("password", "")
+    remove = params.get("remove", False)
     try:
-        with zipfile.ZipFile(path, 'r') as zip_ref:
-            zip_ref.extractall(path.parent, pwd=password.encode() if password else None)
-        path = path.parent / path.stem
-    except zipfile.BadZipFile as e:
-        print(e)
-        return None
-    return path
-
-def try_unrar(path:Path, password:str) -> Path|None:
-    try:
-        with rarfile.RarFile(path, 'r') as rar_ref:
-            rar_ref.extractall(path.parent, pwd=password)
-        path = path.parent / path.stem
+        result = unrar_with_winrar(source, password)
     except Exception as e:
-        print(e)
-        return None
-    return path
+        print(f"解压失败: {e}")
+        raise e
+    if remove:
+        source_path = Path(source)
+        if source_path.is_dir():
+            shutil.rmtree(source_path)
+        elif source_path.is_file():
+            source_path.unlink()
+    return str(result)
 
-def try_un7z(path:Path, password:str) -> Path|None:
+def unrar_with_winrar(source: str, password: str = "") -> Path:
+    """
+    解压 RAR -> 源文件同级 / 去后缀文件夹
+    返回解压目录 Path
+    """
+    src = Path(source).resolve()
+    if not src.exists() :
+        raise FileNotFoundError("源文件不存在或后缀错误")
+    # 解压前判断磁盘空间够不够
+    if src.stat().st_size > shutil.disk_usage(src).free:
+        raise RuntimeError("磁盘空间不足")
+
+    # 输出目录 = 同级 / 源文件名（去后缀）
+    out_dir = src.with_suffix("")
+    out_dir.mkdir(exist_ok=True)
+
+    # WinRAR 路径（若不在 PATH 则填写完整路径）
+    winrar_exe = shutil.which("WinRAR.exe") or shutil.which("rar.exe") or r"D:\Program Files\WinRAR\WinRAR.exe"
+
+    # 构造命令行
+    cmd = [
+        winrar_exe,
+        "x",                     # 解压模式
+        "-y",                    # 自动覆盖
+        "-p" + password,         # 密码（空字符串时 -p 后面无内容）
+        str(src),                # 源文件
+        str(out_dir) + "\\",     # 目标目录（WinRAR 要求以 \ 结尾）
+    ]
+
+    # 执行
     try:
-        with py7zr.SevenZipFile(path, 'r') as z:
-            z.extractall(path.parent, password=password.encode() if password else None)
-        path = path.parent / path.stem
-    except py7zr.Bad7zFile as e:
-        print(e)
-        return None
-    return path
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"WinRAR 解压失败: {e.stderr}") from e
 
+    return out_dir
+
+# ---------- 本地测试 ----------
 if __name__ == '__main__':
-    def exec_script(script:str, ctx:Dict[str, Any], env:Dict[str, Any]|None=None)->Any:
-        if env is None:
-            env = globals()
-        locals = ctx.copy()
-        locals['output'] = None
-        exec(script, env, locals)
-        return locals.get('output', None)
-
-    result = ["v:\\v20250825100235\\六花 喝醉 战斗衔接  锤 击中踩点（邪王真眼） S1 .mp4"]
     params = {
-        "before": "output=cd=result",
-        "condition": ">len(cd)",
-        "after": "output=cd[:]=cd[1:]"
+        "source": r"V:\v20250912192637\回忆 哭 台词 （ダーリン）.mp4\CUzhzF.tmp",
+        "password": "mg",
+        "remove": True,
     }
-    dirs = main(params, {"exec_script": exec_script, "result": result})
-    print(dirs)
+    result = main(params, {})
+    print("最终解压目录:", result)
