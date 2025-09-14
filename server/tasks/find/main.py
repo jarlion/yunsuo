@@ -29,6 +29,8 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any])->List[str]:
             for dir in dirs:
                 append_match_paths(match_paths, os.path.join(base, dir), regexps)
 
+    if not match_paths:
+        raise ValueError("No match paths")
     ctx['result'] = match_paths
     return match_paths
 
