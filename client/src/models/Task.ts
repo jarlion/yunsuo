@@ -89,8 +89,12 @@ export function getComponent(task: ITask, prop: string) {
   if (!type) {
     return "TextInput";
   }
+  console.log(type);
   if (type === "string") {
     return "TextInput";
+  }
+  if (type === "boolean") {
+    return "BooleanInput";
   }
   if (type === "code") {
     return "CodeInput";
