@@ -8,4 +8,3 @@ flask>=2.3.2
 flask_cors>=4.0.0
 requests>=2.31.0
 rarfile>=4.2
-py7zr>=0.20.5

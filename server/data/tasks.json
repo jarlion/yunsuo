@@ -242,5 +242,20 @@
     "childeren": [],
     "create_time": "2025-09-14 22:12:45",
     "update_time": "2025-09-14 22:12:45"
+  },
+  {
+    "id": "T202509150003306025",
+    "pid": "T202509062244238319",
+    "pl_id": "",
+    "code": "extract",
+    "on": true,
+    "params": {
+      "password": "某不知名网友分享",
+      "remove": true,
+      "source": ">result"
+    },
+    "childeren": [],
+    "create_time": "2025-09-15 00:04:05",
+    "update_time": "2025-09-15 00:04:05"
   }
 ]
