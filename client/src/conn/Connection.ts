@@ -2,7 +2,7 @@ import axios, { type AxiosResponse } from "axios";
 
 const conn = axios.create({
   baseURL: "http://localhost:5000/",
-  timeout: 10000,
+  timeout: 100000,
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },
