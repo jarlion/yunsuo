@@ -3,6 +3,7 @@
     "id": "T1756043393861",
     "code": "find",
     "params": {
+      "entry": ">root",
       "patterns": [
         "v\\d{14}\\\\",
         "\\.(mp4|tmp)$"
@@ -52,6 +53,7 @@
     "code": "find",
     "on": true,
     "params": {
+      "entry": ">cur",
       "patterns": [
         "B\\d+",
         "\\.(AZ|DN|exe)$"
@@ -100,6 +102,7 @@
     "code": "find",
     "on": true,
     "params": {
+      "entry": ">root",
       "patterns": [
         "M\\d+",
         "\\.(mp4|7z)$"
@@ -134,13 +137,13 @@
     "code": "rename",
     "on": true,
     "params": {
-      "new_name": ".zip",
+      "new_name": "zip",
       "path": ">cur",
-      "rule": ""
+      "rule": "ext"
     },
     "childeren": [],
-    "create_time": "2025-09-09 23:36:30",
-    "update_time": "2025-09-09 23:36:30"
+    "create_time": "2025-09-15 01:27:45",
+    "update_time": "2025-09-15 01:27:45"
   },
   {
     "id": "T20250913114615210",
@@ -148,6 +151,7 @@
     "code": "find",
     "on": true,
     "params": {
+      "entry": ">root",
       "patterns": [
         "M\\d+",
         "\\.(mp4|7z)$"
@@ -158,8 +162,8 @@
     },
     "desc": "",
     "childeren": [],
-    "create_time": "2025-09-13 11:46:15",
-    "update_time": "2025-09-13 11:46:15"
+    "create_time": "2025-09-17 00:18:25",
+    "update_time": "2025-09-17 00:18:25"
   },
   {
     "id": "T202509131146158632",
@@ -257,5 +261,75 @@
     "childeren": [],
     "create_time": "2025-09-15 00:04:05",
     "update_time": "2025-09-15 00:04:05"
+  },
+  {
+    "id": "T202509170026205424",
+    "pid": "T202508311845081296",
+    "pl_id": "",
+    "code": "find",
+    "on": true,
+    "params": {
+      "entry": ">result",
+      "patterns": [
+        "v\\d{14}\\\\",
+        "\\.(mp4|tmp)$"
+      ],
+      "types": [
+        "file"
+      ]
+    },
+    "childeren": [],
+    "create_time": "2025-09-17 00:26:51",
+    "update_time": "2025-09-17 00:26:51"
+  },
+  {
+    "id": "T202509170027057411",
+    "pid": "T202508311845081296",
+    "pl_id": "",
+    "code": "extract",
+    "on": true,
+    "params": {
+      "source": ">result",
+      "password": "mg",
+      "remove": false
+    },
+    "childeren": [],
+    "create_time": "2025-09-17 00:27:31",
+    "update_time": "2025-09-17 00:27:31"
+  },
+  {
+    "id": "T202509170031298243",
+    "pid": "T202509062244238319",
+    "pl_id": "",
+    "code": "find",
+    "on": true,
+    "params": {
+      "entry": ">result",
+      "patterns": [
+        "v\\d{14}\\\\",
+        "\\.(mp4|tmp)$"
+      ],
+      "types": [
+        "file"
+      ]
+    },
+    "childeren": [],
+    "create_time": "2025-09-17 00:31:50",
+    "update_time": "2025-09-17 00:31:50"
+  },
+  {
+    "id": "T202509170031533857",
+    "pid": "T202509062244238319",
+    "pl_id": "",
+    "code": "extract",
+    "on": true,
+    "params": {
+      "source": ">result",
+      "password": "某不知名网友分享",
+      "remove": true
+    },
+    "childeren": [],
+    "create_time": "2025-09-17 00:32:18",
+    "update_time": "2025-09-17 00:32:18"
   }
 ]

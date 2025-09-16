@@ -4,6 +4,14 @@
   "desc": "查找文件或目录",
   "params": [
     {
+      "name": "entry",
+      "type": "string",
+      "required": true,
+      "desc": "查找的目录",
+      "default": "",
+      "placeholder": "输入目录"
+    },
+    {
       "name": "patterns",
       "type": "string[]",
       "required": true,
@@ -18,16 +26,6 @@
       "desc": "文件还是目录",
       "default": ["file"],
       "placeholder": "('file'|'dir')[]"
-    }
-  ],
-  "ctx": [
-    {
-      "name": "root",
-      "type": "string",
-      "required": true,
-      "desc": "用于查找的根目录",
-      "default": "",
-      "placeholder": "输入根目录"
     }
   ],
   "result": {

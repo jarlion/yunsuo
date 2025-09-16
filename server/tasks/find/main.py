@@ -5,12 +5,14 @@ from pathlib import Path
 
 
 def main(params:Dict[str, Any], ctx:Dict[str, Any])->List[str]:
-    root = ctx.get('root', '')
-    if not root:
-        raise ValueError("Missing required params: root")
-    root = Path(root)
-    if not root.exists():
-        raise ValueError("root not exists")
+    entry = params.get('entry', '')
+    if not entry:
+        raise ValueError("Missing required params: entry")
+    if entry.startswith('>'):
+        entry = eval(entry[1:], globals(), ctx);
+    entry = Path(entry)
+    if not entry.exists():
+        raise ValueError("entry not exists")
     types = params.get('types', ['file'])
     for type in types:
         if type not in ['file', 'dir']:
@@ -21,7 +23,7 @@ def main(params:Dict[str, Any], ctx:Dict[str, Any])->List[str]:
     # 安全地编译正则表达式，处理可能的语法错误
     regexps = [re.compile(pattern) for pattern in patterns]
 
-    for base, dirs, files in os.walk(root):
+    for base, dirs, files in os.walk(entry):
         if 'file' in types:
             for file in files:
                 append_match_paths(match_paths, os.path.join(base, file), regexps)
