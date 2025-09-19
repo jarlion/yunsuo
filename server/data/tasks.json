@@ -23,15 +23,15 @@
     "id": "T1756485181427",
     "pid": "T202508311845081296",
     "params": {
-      "new_name": ".zip",
+      "new_name": "zip",
       "path": ">cur",
-      "rule": ""
+      "rule": "ext"
     },
     "on": true,
     "pl_id": "",
     "childeren": [],
-    "create_time": "2025-09-14 22:20:11",
-    "update_time": "2025-09-14 22:20:11"
+    "create_time": "2025-09-20 01:03:25",
+    "update_time": "2025-09-20 01:03:25"
   },
   {
     "id": "T202508311845081295",
@@ -279,8 +279,8 @@
       ]
     },
     "childeren": [],
-    "create_time": "2025-09-17 00:26:51",
-    "update_time": "2025-09-17 00:26:51"
+    "create_time": "2025-09-20 00:53:45",
+    "update_time": "2025-09-20 00:53:45"
   },
   {
     "id": "T202509170027057411",
@@ -289,13 +289,13 @@
     "code": "extract",
     "on": true,
     "params": {
-      "source": ">result",
       "password": "mg",
-      "remove": false
+      "remove": true,
+      "source": ">result[0]"
     },
     "childeren": [],
-    "create_time": "2025-09-17 00:27:31",
-    "update_time": "2025-09-17 00:27:31"
+    "create_time": "2025-09-20 01:11:08",
+    "update_time": "2025-09-20 01:11:08"
   },
   {
     "id": "T202509170031298243",
@@ -306,16 +306,16 @@
     "params": {
       "entry": ">result",
       "patterns": [
-        "v\\d{14}\\\\",
-        "\\.(mp4|tmp)$"
+        "M\\d+",
+        "\\.(mp4|7z)$"
       ],
       "types": [
         "file"
       ]
     },
     "childeren": [],
-    "create_time": "2025-09-17 00:31:50",
-    "update_time": "2025-09-17 00:31:50"
+    "create_time": "2025-09-20 00:45:30",
+    "update_time": "2025-09-20 00:45:30"
   },
   {
     "id": "T202509170031533857",
@@ -324,12 +324,156 @@
     "code": "extract",
     "on": true,
     "params": {
-      "source": ">result",
       "password": "某不知名网友分享",
-      "remove": true
+      "remove": true,
+      "source": ">result[0]"
     },
     "childeren": [],
-    "create_time": "2025-09-17 00:32:18",
-    "update_time": "2025-09-17 00:32:18"
+    "create_time": "2025-09-20 00:47:58",
+    "update_time": "2025-09-20 00:47:58"
+  },
+  {
+    "id": "T202509180021346813",
+    "pid": "T202509062244238319",
+    "pl_id": "",
+    "code": "rename",
+    "on": true,
+    "params": {
+      "new_name": "zip",
+      "path": ">result",
+      "rule": "ext"
+    },
+    "childeren": [],
+    "create_time": "2025-09-20 00:03:16",
+    "update_time": "2025-09-20 00:03:16"
+  },
+  {
+    "id": "T202509180023313254",
+    "pid": "T202508311845081296",
+    "pl_id": "",
+    "code": "rename",
+    "on": true,
+    "params": {
+      "new_name": "zip",
+      "path": ">result",
+      "rule": "ext"
+    },
+    "childeren": [],
+    "create_time": "2025-09-20 01:03:33",
+    "update_time": "2025-09-20 01:03:33"
+  },
+  {
+    "id": "T202509192239332722",
+    "pl_id": "",
+    "code": "find",
+    "on": true,
+    "params": {
+      "entry": ">root",
+      "patterns": [
+        "\\w{6}",
+        "\\.(7z|7zz)$"
+      ],
+      "types": [
+        "file"
+      ]
+    },
+    "desc": "",
+    "childeren": [],
+    "create_time": "2025-09-19 23:02:43",
+    "update_time": "2025-09-19 23:02:43"
+  },
+  {
+    "id": "T202509192239332339",
+    "pl_id": "",
+    "code": "loop",
+    "on": true,
+    "params": {
+      "after": "output=cd[:]=cd[1:]",
+      "before": "output=cd=result",
+      "condition": ">len(cd)"
+    },
+    "childeren": [],
+    "create_time": "2025-09-19 22:39:33",
+    "update_time": "2025-09-19 22:39:33"
+  },
+  {
+    "id": "T202509192239331191",
+    "pid": "T202509192239332339",
+    "pl_id": "",
+    "code": "rename",
+    "on": true,
+    "params": {
+      "new_name": "zip",
+      "path": ">cur",
+      "rule": "ext"
+    },
+    "childeren": [],
+    "create_time": "2025-09-19 22:39:33",
+    "update_time": "2025-09-19 22:39:33"
+  },
+  {
+    "id": "T202509192239338369",
+    "pid": "T202509192239332339",
+    "pl_id": "",
+    "code": "extract",
+    "on": true,
+    "params": {
+      "password": "S0MP1I",
+      "remove": true,
+      "source": ">result"
+    },
+    "childeren": [],
+    "create_time": "2025-09-19 22:58:51",
+    "update_time": "2025-09-19 22:58:51"
+  },
+  {
+    "id": "T202509192239337937",
+    "pid": "T202509192239332339",
+    "pl_id": "",
+    "code": "find",
+    "on": true,
+    "params": {
+      "entry": ">result",
+      "patterns": [
+        "\\w{6}\\\\",
+        "\\.(mp4|7z)$"
+      ],
+      "types": [
+        "file"
+      ]
+    },
+    "childeren": [],
+    "create_time": "2025-09-19 23:02:25",
+    "update_time": "2025-09-19 23:02:25"
+  },
+  {
+    "id": "T202509192239331437",
+    "pid": "T202509192239332339",
+    "pl_id": "",
+    "code": "rename",
+    "on": true,
+    "params": {
+      "path": ">result[0]",
+      "new_name": "zip",
+      "rule": "ext"
+    },
+    "childeren": [],
+    "create_time": "2025-09-19 22:39:33",
+    "update_time": "2025-09-19 22:39:33"
+  },
+  {
+    "id": "T202509192239338193",
+    "pid": "T202509192239332339",
+    "pl_id": "",
+    "code": "extract",
+    "on": true,
+    "params": {
+      "password": "S0MP1I",
+      "remove": true,
+      "source": ">result"
+    },
+    "childeren": [],
+    "create_time": "2025-09-19 22:59:01",
+    "update_time": "2025-09-19 22:59:01"
   }
 ]
