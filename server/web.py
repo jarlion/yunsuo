@@ -215,10 +215,15 @@ def pl_delete():
     pl_ls = app.data.get('pl')
     if not pl_ls:
         return response_error('pl_ls is empty')
+    # 需要删除的任务
+    task_ids = []
+    for p in pl_ls:
+        if p.get('id') in ids:
+            task_ids.extend(p.get('task_ids', []))
     # 查找并删除指定ids的元素
     pl_ls[:] = [item for item in pl_ls if item.get('id') not in ids]
 
-    _task_del(app.data.get('tasks'), ids)
+    _task_del(app.data.get('tasks'), task_ids) 
     
     return response_success(_pl_list(), msg="删除成功")
 
