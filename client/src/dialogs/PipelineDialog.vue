@@ -6,7 +6,12 @@
     :before-close="onClose"
     :close-on-click-modal="false"
   >
-    <el-form :model="model" :rules="rules" ref="formRef" label-width="120px">
+    <el-form
+      :model="model"
+      :rules="rules"
+      ref="pipelineFormRef"
+      label-width="120px"
+    >
       <el-form-item label="Name" prop="name">
         <el-input v-model="model.name" />
       </el-form-item>
@@ -32,7 +37,14 @@
 </template>
 <script setup lang="ts">
 import { CloseBold, Select } from "@element-plus/icons-vue";
-import { ElButton, ElDialog, ElForm, ElFormItem, ElInput } from "element-plus";
+import {
+  ElButton,
+  ElDialog,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  type FormInstance,
+} from "element-plus";
 import { ref, unref } from "vue";
 
 import TaskConfigListEditPane from "@/components/panes/TaskConfigListEditPane.vue";
@@ -41,6 +53,8 @@ import ObjectInput from "@/components/input/ObjectInput.vue";
 
 const emit = defineEmits(["ok"]);
 
+const formRef = ref<FormInstance>();
+const pipelineFormRef = ref<FormInstance>();
 const visible = ref(false);
 const title = ref("");
 const model = ref<IPipeline>(create());
@@ -67,7 +81,12 @@ function onClose() {
   model.value = create();
 }
 
-function onOk() {
+async function onOk() {
+  try {
+    await pipelineFormRef.value?.validate();
+  } catch (error) {
+    return;
+  }
   emit("ok", unref(model.value));
   onClose();
 }

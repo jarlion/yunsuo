@@ -17,7 +17,7 @@
         <el-form-item label="ctx">
           <ObjectInput v-model="ctx" />
         </el-form-item>
-        <el-form-item label="code">
+        <el-form-item label="code" prop="code">
           <TaskSelect v-model="model.code" @change="onTaskCodeChange" />
         </el-form-item>
         <el-form-item label="on">
@@ -131,11 +131,12 @@ function onTaskCodeChange(code: string) {
 }
 
 const rules = computed(() => {
-  const kvs =
-    task.value?.params.map((p) => [
-      p.name,
-      { required: p.required, trigger: "blur" },
-    ]) || [];
+  const kvs = task.value?.params.map((p) => [
+    p.name,
+    { required: p.required, trigger: "blur" },
+  ]) || [];
+  // 添加 code 必填
+  kvs.push(["code", { required: true, trigger: "blur" }]);
   return Object.fromEntries(kvs);
 });
 
@@ -222,7 +223,7 @@ function onClose() {
 }
 async function onOk() {
   try {
-    await unref(taskFormRef)?.validate();
+    await taskFormRef.value?.validate();
   } catch (err) {
     // 校验失败
     return;
