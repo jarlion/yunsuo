@@ -90,7 +90,7 @@ def _pl_list(name:str|None=None, code:str|None=None, desc:str|None=None, on:bool
     if task_list:
         for pl in pl_ls:
             new_pl = pl.copy()
-            new_pl['tasks'] = _init_tasks(new_pl.get('tasks', []))
+            new_pl['tasks'] = _init_tasks(new_pl.get('task_ids', []))
             result.append(new_pl)
     return result
 
@@ -124,6 +124,7 @@ def pl_add():
             'desc': '',
             'stars': 0,
             'tasks': [],
+            'task_ids': [],
             'create_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         }
@@ -151,8 +152,8 @@ def pl_copy():
         new_pl['id'] = f"PL{datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(0, 9999)}"
         new_pl['create_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         new_pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        new_tasks = tasks_copy(new_pl.get('tasks', []))
-        # new_pl['tasks_id'] = [t.get('id') for t in new_tasks]
+        new_tasks = tasks_copy(new_pl.get('task_ids', []))
+        # new_pl['task_ids'] = [t.get('id') for t in new_tasks]
         new_pl['tasks'] = new_tasks
         pl_ls.append(new_pl)
     except Exception as e:
@@ -196,7 +197,8 @@ def pl_update():
         if stars:
             pl['stars'] = stars
         if tasks:
-            pl['tasks'] = [t.get('id') for t in tasks]
+            pl['tasks'] = tasks
+            pl['task_ids'] = [t.get('id') for t in tasks]
         # 更新时间
         pl['update_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -575,6 +577,7 @@ def task_del():
         for pl in pl_ls:
             if pl.get('id') in pl_ids:
                 pl['tasks'] = [task_id for task_id in pl['tasks'] if task_id not in ids]
+                pl['task_ids'] = [task_id for task_id in pl['task_ids'] if task_id not in ids]
     
         del_task(tasks_list, ids)
     except Exception as e:
@@ -614,7 +617,7 @@ def all_save():
     save_data()
     return response_success('success')
 
-def save_atomic_write_json(data:Dict[str, Any], file_path:str, ensure_ascii=False, indent=2):
+def save_atomic_write_json(data:Any, file_path:str, ensure_ascii=False, indent=2):
     """
     原子写入json文件
     :param data: 数据
@@ -639,7 +642,14 @@ def save_atomic_write_json(data:Dict[str, Any], file_path:str, ensure_ascii=Fals
 # 只在成功响应时保存数据的函数
 def save_data():
     # 写入json文件
-    pl_ls = app.data.get('pl')
+    pipelines = app.data.get('pl')
+    pl_ls = []
+    # 删除复制后的tasks属性
+    for pl in pipelines:
+        new_pl = pl.copy()
+        if 'tasks' in new_pl:
+            del new_pl['tasks']
+        pl_ls.append(new_pl)
     save_atomic_write_json(pl_ls, 'data/pl.json')
     tasks_ls = app.data.get('tasks')
     save_atomic_write_json(tasks_ls, 'data/tasks.json')
@@ -655,16 +665,20 @@ def shutdown_hook(exception = None):
 def init_data():
     if not os.path.exists('data'):
         os.makedirs('data')
-    if not os.path.exists('data/pl.json'):
-        with open('data/pl.json', 'w', encoding='utf-8') as f:
-            pl = json.dump({'pl': []}, f)
-    with open('data/pl.json', 'r', encoding='utf-8') as f:
-        pl = json.load(f)
     if not os.path.exists('data/tasks.json'):
         with open('data/tasks.json', 'w', encoding='utf-8') as f:
             tasks = json.dump({'tasks': []}, f)
     with open('data/tasks.json', 'r', encoding='utf-8') as f:
         tasks = json.load(f)
+    
+    if not os.path.exists('data/pl.json'):
+        with open('data/pl.json', 'w', encoding='utf-8') as f:
+            pl = json.dump({'pl': []}, f)
+    with open('data/pl.json', 'r', encoding='utf-8') as f:
+        pl = json.load(f)
+        for p in pl.get('pl', []):
+            task_ids = p.get('task_ids', [])
+            p['tasks'] = [t for t in tasks if t.get('id') in task_ids]
     return {"pl": pl, "tasks": tasks}
 
 if __name__ == '__main__':
