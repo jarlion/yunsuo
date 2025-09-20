@@ -665,21 +665,35 @@ def shutdown_hook(exception = None):
 def init_data():
     if not os.path.exists('data'):
         os.makedirs('data')
+    
+    # 处理tasks.json
     if not os.path.exists('data/tasks.json'):
         with open('data/tasks.json', 'w', encoding='utf-8') as f:
-            tasks = json.dump({'tasks': []}, f)
+            json.dump([], f)
     with open('data/tasks.json', 'r', encoding='utf-8') as f:
-        tasks = json.load(f)
+        tasks_data = json.load(f)
+        # 处理可能的不同格式
+        if isinstance(tasks_data, dict) and 'tasks' in tasks_data:
+            tasks = tasks_data['tasks']
+        else:
+            tasks = tasks_data
     
+    # 处理pl.json
     if not os.path.exists('data/pl.json'):
         with open('data/pl.json', 'w', encoding='utf-8') as f:
-            pl = json.dump({'pl': []}, f)
+            json.dump([], f)
     with open('data/pl.json', 'r', encoding='utf-8') as f:
-        pl = json.load(f)
-        for p in pl.get('pl', []):
-            task_ids = p.get('task_ids', [])
-            p['tasks'] = [t for t in tasks if t.get('id') in task_ids]
-    return {"pl": pl, "tasks": tasks}
+        pl_list = json.load(f)
+        
+        # 添加类型检查，确保只对字典类型的元素调用get()方法
+        for p in pl_list:
+            if isinstance(p, dict):
+                task_ids = p.get('task_ids', [])
+                # 确保tasks是列表格式
+                if isinstance(tasks, list):
+                    p['tasks'] = [t for t in tasks if isinstance(t, dict) and t.get('id') in task_ids]
+    
+    return {"pl": pl_list, "tasks": tasks}
 
 if __name__ == '__main__':
     app.data= init_data()
