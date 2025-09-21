@@ -26,6 +26,7 @@ def main(params: Dict[str, Any], ctx: Dict[str, Any]) -> str:
             shutil.rmtree(source_path)
         elif source_path.is_file():
             source_path.unlink()
+    print(f"[extract] 解压成功: {result}")
     return str(result)
 
 def unrar_with_winrar(source: str, password: str = "") -> Path:
@@ -34,10 +35,12 @@ def unrar_with_winrar(source: str, password: str = "") -> Path:
     返回解压目录 Path
     """
     src = Path(source).resolve()
-    if not src.exists() :
+    if not src.exists():
         raise FileNotFoundError("源文件不存在或后缀错误")
+    
     # 解压前判断磁盘空间够不够
-    if src.stat().st_size > shutil.disk_usage(src).free:
+    disk_usage = shutil.disk_usage(src.parent)
+    if src.stat().st_size > disk_usage.free:
         raise RuntimeError("磁盘空间不足")
 
     # 输出目录 = 同级 / 源文件名（去后缀）
@@ -63,7 +66,16 @@ def unrar_with_winrar(source: str, password: str = "") -> Path:
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"WinRAR 解压失败: {e.stderr}") from e
 
-    return out_dir
+    # 确保out_dir存在后再调用resolve(strict=True)
+    if not out_dir.exists():
+        # 如果解压后目录不存在，重新创建
+        out_dir.mkdir(exist_ok=True)
+        print(f"[debug] 解压后目录不存在，已重新创建: {out_dir}")
+    
+    return out_dir.resolve()
+
+
+
 
 # ---------- 本地测试 ----------
 if __name__ == '__main__':
