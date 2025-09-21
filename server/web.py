@@ -274,7 +274,7 @@ def pl_exec():
         if not pl:
             return response_error('id not found')
         context = _init_context(pl.get('ctx',{}))
-        tasks = _init_tasks(pl.get('tasks', []))
+        tasks = _init_tasks(pl.get('task_ids', []))
         tasks = [t for t in tasks if not t.get('pid')]
         if not tasks:
             return response_error('tasks not found')
