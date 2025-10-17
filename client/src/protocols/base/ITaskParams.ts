@@ -12,7 +12,6 @@ export interface ITaskParams {
 export function toTaskParams(task: ITaskConfig): ITaskParams {
   return {
     id: task.id,
-    pid: task.parentId,
     pl_id: task.pipelineId,
     code: task.code,
     on: task.on,

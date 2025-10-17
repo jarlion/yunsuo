@@ -12,7 +12,7 @@
         ref="taskFormRef"
         label-width="100px"
         :rules="rules"
-        :model="model.params"
+        :model="model"
       >
         <el-form-item label="ctx">
           <ObjectInput v-model="ctx" />
@@ -131,9 +131,15 @@ function onTaskCodeChange(code: string) {
 }
 
 const rules = computed(() => {
-  const kvs = task.value?.params.map((p) => [
+  const kvs: Array<[string, { validator?: (source: any, options: any, callback: Function) => void, required: boolean, trigger: string }]> = task.value?.params.map((p: { name: string }) => [
     p.name,
-    { required: p.required, trigger: "blur" },
+    { validator: (_, __, callback:Function)=>{
+      if (!model.value.params[p.name]) {
+        callback(`${p.name} 不能为空`);
+        return;
+      }
+      callback();
+    }, required: true, trigger: "blur" },
   ]) || [];
   // 添加 code 必填
   kvs.push(["code", { required: true, trigger: "blur" }]);
@@ -223,6 +229,7 @@ function onClose() {
 }
 async function onOk() {
   try {
+    console.log(model.value.params);
     await taskFormRef.value?.validate();
   } catch (err) {
     // 校验失败
